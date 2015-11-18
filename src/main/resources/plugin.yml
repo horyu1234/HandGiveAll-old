@@ -1,0 +1,26 @@
+name: HandGiveAll
+main: com.horyu1234.handgiveall.HandGiveAll
+version: 10.5
+author: horyu1234
+website: https://horyu1234.com
+softdepend: [Vault]
+
+commands:
+  hh:
+    description: HandGiveAll Command. [Made By horyu1234]
+  hga:
+    description: HandGiveAll Command. [Made By horyu1234]
+  hgar:
+    description: HandGiveAll Command. [Made By horyu1234]
+  hgac:
+    description: HandGiveAll Command. [Made By horyu1234]
+  hgacr:
+    description: HandGiveAll Command. [Made By horyu1234]
+  dga:
+    description: HandGiveAll Command. [Made By horyu1234]
+  mga:
+    description: HandGiveAll Command. [Made By horyu1234]
+  hca:
+    description: HandGiveAll Command. [Made By horyu1234]
+  pga:
+    description: HandGiveAll Command. [Made By horyu1234]
