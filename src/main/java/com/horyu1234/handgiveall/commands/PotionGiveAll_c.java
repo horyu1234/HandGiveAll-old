@@ -81,15 +81,15 @@ public class PotionGiveAll_c implements CommandExecutor {
 								for (PotionEffect pe : all.getActivePotionEffects())
 									all.removePotionEffect(pe.getType());
 								plugin.getFireworkUtils().launchFireworkToAll();
-								PlayerUtils.sendMsg("");
-								PlayerUtils.sendMsg("");
-								PlayerUtils.sendMsg("");
-								PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-								PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게서 모든 포션 효과를 제거하셨습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()));
-								PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
-								PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-								PlayerUtils.sendMsg("");
 							}
+							PlayerUtils.sendMsg("");
+							PlayerUtils.sendMsg("");
+							PlayerUtils.sendMsg("");
+							PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+							PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게서 모든 포션 효과를 제거하셨습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()));
+							PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
+							PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+							PlayerUtils.sendMsg("");
 						} else {
 							p.sendMessage(plugin.prefix+"§c손에 포션을 들고 있어야 합니다.");
 							return false;
