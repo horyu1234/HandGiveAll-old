@@ -91,6 +91,11 @@ public class HandGiveAll_c implements CommandExecutor {
 					} else s.sendMessage(plugin.prefix + "§c게임 내에서만 사용 가능한 명령어입니다.");
 				}
 			} else if (l.equalsIgnoreCase("hgar")) {
+				if (!s.isOp()) {
+					s.sendMessage(plugin.prefix+"§c권한이 없습니다.");
+					return false;
+				}
+
 				if (s instanceof Player) {
 					if (a.length != 2) {
 						plugin.getHelp().sendHelp(s, l, 1, false);
@@ -135,6 +140,11 @@ public class HandGiveAll_c implements CommandExecutor {
 					} else p.sendMessage(plugin.prefix + "§c손에 아이템을 들고 있어야 사용가능합니다.");
 				} else s.sendMessage(plugin.prefix + "§c게임 내에서만 사용 가능한 명령어입니다.");
 			} else if (l.equalsIgnoreCase("hgac")) {
+				if (!s.isOp()) {
+					s.sendMessage(plugin.prefix+"§c권한이 없습니다.");
+					return false;
+				}
+
 				if (a.length != 2) {
 					plugin.getHelp().sendHelp(s, l, 1, false);
 					return false;
@@ -163,6 +173,11 @@ public class HandGiveAll_c implements CommandExecutor {
 					return true;
 				} else s.sendMessage(plugin.prefix+"§c수량은 0보다 커야합니다.");
 			} else if (l.equalsIgnoreCase("hgacr")) {
+				if (!s.isOp()) {
+					s.sendMessage(plugin.prefix+"§c권한이 없습니다.");
+					return false;
+				}
+
 				if (a.length != 3) {
 					plugin.getHelp().sendHelp(s, l, 1, false);
 					return false;
