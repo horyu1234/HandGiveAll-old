@@ -9,6 +9,6 @@
 
 ---
 
-본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
-출처: https://github.com/horyu1234
-라이센스: Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.  
+출처: https://github.com/horyu1234  
+라이센스: Copyright (c) 2014~2016 HoryuSystems All rights reserved.  
