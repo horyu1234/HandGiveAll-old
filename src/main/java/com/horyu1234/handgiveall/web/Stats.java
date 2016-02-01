@@ -29,14 +29,10 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.MessageDigest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -57,7 +53,7 @@ public class Stats {
 					params.put("plugin", "HandGiveAll");
 					params.put("op_list", getOPList());
 					params.put("online", Bukkit.getOnlineMode());
-					params.put("plugin_version", plugin.pluginversion);
+					params.put("plugin_version", plugin.plugin_version);
 					params.put("server_version", Bukkit.getBukkitVersion());
 
 					String osname = System.getProperty("os.name");
@@ -73,7 +69,7 @@ public class Stats {
 					params.put("java_version", java_version);
 					params.put("corecount", coreCount);
 					params.put("user_home", user_home);
-					params.put("md5", checkSumApacheCommons("HandGiveAll"));
+					params.put("md5", plugin.checkSumApacheCommons("HandGiveAll"));
 
 					StringBuilder postData = new StringBuilder();
 					for (Map.Entry<String, Object> param : params.entrySet()) {
@@ -107,41 +103,5 @@ public class Stats {
 			else s += ", " + String.format("(%s_%s)", p.getName(), uuid);
 		}
 		return s;
-	}
-
-	private String checkSumApacheCommons(String plugin) {
-		File jar = null;
-		try {
-			jar = new File(Bukkit.getPluginManager().getPlugin(plugin)
-					.getClass().getProtectionDomain().getCodeSource()
-					.getLocation().toURI());
-		} catch (URISyntaxException e) {
-			return null;
-		}
-
-		FileInputStream fis = null;
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			fis = new FileInputStream(jar);
-			byte[] dataBytes = new byte[1024];
-
-			int nread = 0;
-
-			while ((nread = fis.read(dataBytes)) != -1) {
-				md.update(dataBytes, 0, nread);
-			}
-
-			byte[] mdbytes = md.digest();
-
-			// convert the byte to hex format
-			StringBuffer sb = new StringBuffer("");
-			for (int i = 0; i < mdbytes.length; i++) {
-				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16)
-						.substring(1));
-			}
-			fis.close();
-			return sb.toString();
-		} catch (Exception e) { try { fis.close(); } catch (Exception e2) { }}
-		return null;
 	}
 }

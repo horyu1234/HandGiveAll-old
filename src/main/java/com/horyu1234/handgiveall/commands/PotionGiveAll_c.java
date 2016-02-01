@@ -76,7 +76,7 @@ public class PotionGiveAll_c implements CommandExecutor {
 								PlayerUtils.sendMsg("");
 								PlayerUtils.sendMsg("");
 								PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-								PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a효과를 지급하였습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), convertPotionEffectListToString(potionList)));
+								PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a효과를 지급하였습니다.", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), convertPotionEffectListToString(potionList)));
 								PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 								PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 								PlayerUtils.sendMsg("");
@@ -94,7 +94,7 @@ public class PotionGiveAll_c implements CommandExecutor {
 							PlayerUtils.sendMsg("");
 							PlayerUtils.sendMsg("");
 							PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-							PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게서 모든 포션 효과를 제거하셨습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()));
+							PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게서 모든 포션 효과를 제거하셨습니다.", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()));
 							PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 							PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 							PlayerUtils.sendMsg("");

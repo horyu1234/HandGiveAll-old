@@ -74,7 +74,7 @@ public class HandGiveAll_c implements CommandExecutor {
 								return false;
 							}
 							if (amount > 0) {
-								plugin.getItemUtils().giveItemAll(p.getItemInHand().clone(), amount, plugin.getConfig().getBoolean("invfullmsg"));
+								plugin.getItemUtils().giveItemAll(p.getItemInHand().clone(), amount, plugin.config_show_inv_full_msg);
 								plugin.getFireworkUtils().launchFireworkToAll();
 								PlayerUtils.sendMsg("");
 								PlayerUtils.sendMsg("");
@@ -82,8 +82,7 @@ public class HandGiveAll_c implements CommandExecutor {
 								PlayerUtils.sendMsg(plugin.bcprefix + "§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 								PlayerUtils.sendMsg(plugin.bcprefix + String.format(
 										"§e%s§a님이 모두에게 §e%s§a을(를) §e%s개 §a지급하였습니다.",
-										plugin.getConfig().getBoolean(
-												"usenickname") ? p
+										plugin.config_use_nickname ? p
 												.getDisplayName() : p
 												.getName(),
 										plugin.getItemUtils()
@@ -122,7 +121,7 @@ public class HandGiveAll_c implements CommandExecutor {
 							if (max > 0 && min > 0) {
 								int random = plugin.getNumberUtil().randomInRange(min, max);
 								hand.setAmount(random);
-								plugin.getItemUtils().giveItemAll(hand, random, plugin.getConfig().getBoolean("invfullmsg"));
+								plugin.getItemUtils().giveItemAll(hand, random, plugin.config_show_inv_full_msg);
 								plugin.getFireworkUtils().launchFireworkToAll();
 								PlayerUtils.sendMsg("");
 								PlayerUtils.sendMsg("");
@@ -131,8 +130,7 @@ public class HandGiveAll_c implements CommandExecutor {
 								PlayerUtils.sendMsg(plugin.bcprefix
 										+ String.format(
 										"§e%s§a님이 모두에게 §e%s§a을(를) §e(랜덤추첨된)%s개 §a지급하였습니다.",
-										plugin.getConfig().getBoolean(
-												"usenickname") ? p
+										plugin.config_use_nickname ? p
 												.getDisplayName() : p
 												.getName(), plugin
 												.getItemUtils()
@@ -168,13 +166,13 @@ public class HandGiveAll_c implements CommandExecutor {
 					ItemStack item = new ItemStack(Material.AIR);
 					item.setType(Material.getMaterial(id));
 					item.setAmount(amount);
-					plugin.getItemUtils().giveItemAll(item.clone(), amount, plugin.getConfig().getBoolean("invfullmsg"));
+					plugin.getItemUtils().giveItemAll(item.clone(), amount, plugin.config_show_inv_full_msg);
 					plugin.getFireworkUtils().launchFireworkToAll();
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a을(를) §e%s개 §a지급하였습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName(), item.getType().name(), fmt.format(amount)));
+					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a을(를) §e%s개 §a지급하였습니다.", plugin.config_use_nickname ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName(), item.getType().name(), fmt.format(amount)));
 					PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 					PlayerUtils.sendMsg("");
@@ -204,13 +202,13 @@ public class HandGiveAll_c implements CommandExecutor {
 						ItemStack item = new ItemStack(Material.AIR);
 						item.setType(Material.getMaterial(id));
 						item.setAmount(random);
-						plugin.getItemUtils().giveItemAll(item.clone(), random, plugin.getConfig().getBoolean("invfullmsg"));
+						plugin.getItemUtils().giveItemAll(item.clone(), random, plugin.config_show_inv_full_msg);
 						plugin.getFireworkUtils().launchFireworkToAll();
 						PlayerUtils.sendMsg("");
 						PlayerUtils.sendMsg("");
 						PlayerUtils.sendMsg("");
 						PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-						PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a을(를) §e(랜덤추첨된)%s개 §a지급하였습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName(), item.getType().name(), fmt.format(random)));
+						PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a을(를) §e(랜덤추첨된)%s개 §a지급하였습니다.", plugin.config_use_nickname ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName(), item.getType().name(), fmt.format(random)));
 						PlayerUtils.sendMsg(plugin.bcprefix+String.format("§3최솟값: §b%s§f, §3최댓값: §b%s", fmt.format(min), fmt.format(max)));
 						PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 						PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");

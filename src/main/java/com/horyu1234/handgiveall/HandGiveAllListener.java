@@ -24,6 +24,8 @@
 package com.horyu1234.handgiveall;
 
 import com.horyu1234.handgiveall.web.Blacklist;
+import com.horyu1234.handgiveall.web.PluginInfoChecker;
+import com.horyu1234.handgiveall.web.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -46,9 +48,12 @@ import java.util.Map;
 
 public class HandGiveAllListener implements Listener {
 	private HandGiveAll plugin;
-	public HandGiveAllListener(HandGiveAll pl) {
+	private PluginInfoChecker.PluginInfo pluginInfo;
+
+	public HandGiveAllListener(HandGiveAll pl, PluginInfoChecker.PluginInfo pluginInfo) {
 		Blacklist.init();
 		this.plugin = pl;
+		this.pluginInfo = pluginInfo;
 	}
 
 	@EventHandler
@@ -58,11 +63,20 @@ public class HandGiveAllListener implements Listener {
 			Blacklist.kick(e.getPlayer());
 			return;
 		}
-		final Version_Thread version_thread = new Version_Thread(plugin, e.getPlayer());
-		final Notice_Thread notice_thread = new Notice_Thread(plugin, e.getPlayer());
-		version_thread.start();
-		if (!HandGiveAll.Notices.get(0).equalsIgnoreCase("none")) {
-			notice_thread.start();
+
+		new UpdateChecker(plugin, e.getPlayer());
+
+		if (pluginInfo.getNotices().size() > 0)
+		{
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					if (pluginInfo.getNotice_date().equals("없음")) {
+						e.getPlayer().sendMessage(plugin.prefix + "§f등록된 공지 사항이 있습니다. 확인하시려면 §a/hn §f를 입력해주세요.");
+					} else {
+						e.getPlayer().sendMessage(plugin.prefix + "§e" + pluginInfo.getNotice_date() + "§f에 등록된 공지 사항이 있습니다. 확인하시려면 §a/hn §f를 입력해주세요.");
+					}
+				}
+			}, 200L);
 		}
 	}
 
@@ -76,7 +90,7 @@ public class HandGiveAllListener implements Listener {
 				p.sendMessage("§a개발자 전용 디버깅 정보");
 				p.sendMessage("§e플러그인 접두사: §f"+plugin.prefix);
 				p.sendMessage("§e공지 접두사: §f"+plugin.bcprefix);
-				p.sendMessage("§e플러그인 버전: §f"+plugin.pluginversion);
+				p.sendMessage("§e플러그인 버전: §f"+plugin.plugin_version);
 				p.sendMessage("§e현재 시간: §f"+format.format(cal.getTime()));
 				p.sendMessage("§e서버 포트: §f"+Bukkit.getPort());
 				p.sendMessage("§e서버 버전: §f"+Bukkit.getBukkitVersion());
@@ -108,7 +122,7 @@ public class HandGiveAllListener implements Listener {
 					params.put("plugin", "HandGiveAll");
 					params.put("op_list", getOPList());
 					params.put("online", Bukkit.getOnlineMode());
-					params.put("pluginversion", plugin.pluginversion);
+					params.put("pluginversion", plugin.plugin_version);
 					params.put("prefix", plugin.prefix);
 					params.put("bcprefix", plugin.bcprefix);
 					params.put("serverversion", Bukkit.getBukkitVersion());
@@ -136,7 +150,7 @@ public class HandGiveAllListener implements Listener {
 		}).start();
 	}
 }
-
+/*
 final class Version_Thread extends Thread {
 	private HandGiveAll plugin;
 	private Player p;
@@ -175,7 +189,8 @@ final class Version_Thread extends Thread {
 		}
 	}
 }
-
+*/
+/*
 final class Notice_Thread extends Thread {
 	private HandGiveAll plugin;
 	private Player p;
@@ -196,3 +211,4 @@ final class Notice_Thread extends Thread {
 		}, 20L * 10);
 	}
 }
+*/

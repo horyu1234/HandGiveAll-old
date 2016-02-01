@@ -54,7 +54,7 @@ public class Help implements CommandExecutor {
 
 	public void sendHelp(CommandSender s, String l, int page, boolean basic) {
 		String main = "/"+l+(basic?" ":" ? ");
-		String name = "HandGiveAll v"+plugin.pluginversion;
+		String name = "HandGiveAll v"+plugin.plugin_version;
 		if (page == 0) {
 			s.sendMessage("§6■==== §e"+name+" §6====■");
 			s.sendMessage("§a"+main+"1 §f손에 있는 아이템 주기 명령어 관련");

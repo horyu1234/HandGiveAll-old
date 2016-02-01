@@ -23,33 +23,62 @@
 
 package com.horyu1234.handgiveall.web;
 
+import com.horyu1234.handgiveall.HandGiveAll;
+import org.bukkit.command.CommandSender;
+
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UpdateChecker {
-	public static double getVersion(String name) {
-		String plugin_name = "@" + name + "@";
+public class UpdateChecker implements Runnable
+{
+	private HandGiveAll plugin;
+	private CommandSender sender;
+	private String url;
+
+	public UpdateChecker(final HandGiveAll plugin, final CommandSender sender) {
+		this.plugin = plugin;
+		this.sender = sender;
+		this.url = "http://minecraft.horyu.me/minecraft/" + plugin.getName() + "/version";
+		new Thread(this).start();
+	}
+
+	public void run() {
 		try {
-			URL url = new URL(
-					"https://raw.githubusercontent.com/horyu1234/Checker/master/Update");
-			HttpURLConnection urlConn = (HttpURLConnection) url
-					.openConnection();
-			urlConn.setDoOutput(true);
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					urlConn.getInputStream(), "UTF8"));
-			String inputLine;
-			while ((inputLine = br.readLine()) != null) {
-				if (inputLine.contains(plugin_name)) {
-					String version = inputLine.split(plugin_name)[1];
-					return Double.parseDouble(version);
+			final BufferedReader br = new BufferedReader(new InputStreamReader(new URL(this.url).openStream(), "UTF8"));
+
+			String msg;
+			while ((msg = br.readLine()) != null) {
+				double plugin_version = Double.parseDouble(msg);
+				br.close();
+
+				if (plugin_version > plugin.plugin_version) {
+					sender.sendMessage(plugin.prefix + "§b#==============================#");
+					sender.sendMessage(plugin.prefix + "§f플러그인의 새로운 업데이트가 발견되었습니다!");
+					sender.sendMessage(plugin.prefix + "§c현재버전: " + plugin.plugin_version);
+					sender.sendMessage(plugin.prefix + "§a새로운버전: " + plugin_version);
+					sender.sendMessage(plugin.prefix + "§e플러그인 다운로드 링크: https://horyu1234.com/HandGiveAll");
+					sender.sendMessage(plugin.prefix + "§b#==============================#");
+					new Thread(new Runnable() {
+						public void run() {
+							JOptionPane.showMessageDialog(null, "플러그인의 새로운 업데이트가 발견되었습니다!", "HandGiveAll v" + plugin.plugin_version, JOptionPane.INFORMATION_MESSAGE);
+						}
+					}).start();
+				} else if (plugin_version == plugin.plugin_version) {
+					sender.sendMessage(plugin.prefix + "§f새로운 버전이 없습니다.");
+				} else {
+					sender.sendMessage(plugin.prefix + "§f#==============================#");
+					sender.sendMessage(plugin.prefix + "§c플러그인의 버전을 확인하는데 문제가 발생했습니다.");
+					sender.sendMessage(plugin.prefix + "§f#==============================#");
 				}
+				return;
 			}
 			br.close();
-		} catch (Exception e) {
-			System.out.println("UpdateChecker Exception: " + e.toString());
 		}
-		return 0.0D;
+		catch (Exception exception) {
+			plugin.sendConsole("§c업데이트를 확인하는 중 문제가 발생했습니다.");
+			plugin.sendConsole("§c메시지: " + exception.getMessage());
+		}
 	}
 }

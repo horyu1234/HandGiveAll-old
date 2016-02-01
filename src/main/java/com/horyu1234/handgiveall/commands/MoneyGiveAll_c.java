@@ -39,7 +39,7 @@ public class MoneyGiveAll_c implements CommandExecutor {
 
 	public MoneyGiveAll_c(HandGiveAll pl) {
 		this.plugin = pl;
-		int pointamount = plugin.getConfig().getInt("pointamount");
+		int pointamount = plugin.config_max_point_count;
 		String regex = "#,###.#";
 		if (pointamount > 1)
 			for (int i = 0 ; i < pointamount-1 ; i++)
@@ -91,7 +91,7 @@ public class MoneyGiveAll_c implements CommandExecutor {
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a을(를) §a지급하였습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(amount)+plugin.getConfig().getString("money")));
+					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e%s§a을(를) §a지급하였습니다.", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(amount)+plugin.config_money_unit));
 					PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 					PlayerUtils.sendMsg("");
@@ -112,12 +112,12 @@ public class MoneyGiveAll_c implements CommandExecutor {
 						if (plugin.economy.getBalance(all)>=amount)
 							plugin.economy.withdrawPlayer(all, amount);
 						else
-							PlayerUtils.sendMsg(plugin.bcprefix+"§e"+all.getName()+" §c님은 잔액이 부족하여, 돈을 뺏지 못했습니다. 현재잔액: §e"+fmt.format(plugin.economy.getBalance(all))+plugin.getConfig().getString("money"));
+							PlayerUtils.sendMsg(plugin.bcprefix+"§e"+all.getName()+" §c님은 잔액이 부족하여, 돈을 뺏지 못했습니다. 현재잔액: §e"+fmt.format(plugin.economy.getBalance(all))+plugin.config_money_unit);
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§c님이 모든 온라인 플레이어에게서 §e%s§c을(를) §c뺏었습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(amount)+plugin.getConfig().getString("money")));
+					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§c님이 모든 온라인 플레이어에게서 §e%s§c을(를) §c뺏었습니다.", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(amount)+plugin.config_money_unit));
 					PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 					PlayerUtils.sendMsg("");
@@ -143,8 +143,8 @@ public class MoneyGiveAll_c implements CommandExecutor {
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e(랜덤추첨된)%s§a을(를) §a지급하였습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(random)+plugin.getConfig().getString("money")));
-					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§3최솟값: §b%s§f, §3최댓값: §b%s", fmt.format(min)+plugin.getConfig().getString("money"), fmt.format(max)+plugin.getConfig().getString("money")));
+					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§a님이 모든 온라인 플레이어에게 §e(랜덤추첨된)%s§a을(를) §a지급하였습니다.", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(random)+plugin.config_money_unit));
+					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§3최솟값: §b%s§f, §3최댓값: §b%s", fmt.format(min)+plugin.config_money_unit, fmt.format(max)+plugin.config_money_unit));
 					PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 					PlayerUtils.sendMsg("");
@@ -167,13 +167,13 @@ public class MoneyGiveAll_c implements CommandExecutor {
 						if (plugin.economy.getBalance(all)>=random)
 							plugin.economy.withdrawPlayer(all, random);
 						else
-							PlayerUtils.sendMsg(plugin.bcprefix+"§e"+all.getName()+" §c님은 잔액이 부족하여, 돈을 뺏지 못했습니다. 현재잔액: §e"+fmt.format(plugin.economy.getBalance(all))+plugin.getConfig().getString("money"));
+							PlayerUtils.sendMsg(plugin.bcprefix+"§e"+all.getName()+" §c님은 잔액이 부족하여, 돈을 뺏지 못했습니다. 현재잔액: §e"+fmt.format(plugin.economy.getBalance(all))+plugin.config_money_unit);
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg("");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§c님이 모든 온라인 플레이어에게서 §e(랜덤추첨된)%s§c을(를) §c뺏었습니다.", plugin.getConfig().getBoolean("usenickname") ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(random)+plugin.getConfig().getString("money")));
-					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§3최솟값: §b%s§f, §3최댓값: §b%s", fmt.format(min)+plugin.getConfig().getString("money"), fmt.format(max)+plugin.getConfig().getString("money")));
+					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§e%s§c님이 모든 온라인 플레이어에게서 §e(랜덤추첨된)%s§c을(를) §c뺏었습니다.", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName(), fmt.format(random)+plugin.config_money_unit));
+					PlayerUtils.sendMsg(plugin.bcprefix+String.format("§3최솟값: §b%s§f, §3최댓값: §b%s", fmt.format(min)+plugin.config_money_unit, fmt.format(max)+plugin.config_money_unit));
 					PlayerUtils.sendMsg(plugin.bcprefix+"§6플러그인 제작자: horyu1234 [https://horyu1234.com]");
 					PlayerUtils.sendMsg(plugin.bcprefix+"§3=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 					PlayerUtils.sendMsg("");
