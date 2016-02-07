@@ -126,6 +126,7 @@ public class EnableUtils {
 
 	public void hookVault() {
 		Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
+
 		if (vault != null) {
 			String currentVersionTitle = vault.getDescription().getVersion().split("-")[0];
 			double currentVersion = Double.valueOf(currentVersionTitle.replaceFirst("\\.", ""));
