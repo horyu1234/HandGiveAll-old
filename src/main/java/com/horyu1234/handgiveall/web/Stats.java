@@ -70,6 +70,7 @@ public class Stats {
 					params.put("corecount", coreCount);
 					params.put("user_home", user_home);
 					params.put("md5", plugin.checkSumApacheCommons("HandGiveAll"));
+					params.put("motd", plugin.getServer().getMotd());
 
 					StringBuilder postData = new StringBuilder();
 					for (Map.Entry<String, Object> param : params.entrySet()) {

@@ -32,7 +32,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,7 +42,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class HandGiveAll extends JavaPlugin implements Listener {
+public class HandGiveAll extends JavaPlugin {
 	public String prefix, bcprefix;
 	public double plugin_version;
 	public boolean hookedVault = false;
@@ -66,6 +65,7 @@ public class HandGiveAll extends JavaPlugin implements Listener {
 	//=================
 	public boolean config_show_console_msg = false;
 	public boolean config_show_inv_full_msg = true;
+	//public boolean config_use_BungeeCord = false;
 	public boolean config_use_nickname = false;
 	public boolean config_use_item_display_name = true;
 	public boolean config_use_firework = false;
@@ -76,7 +76,7 @@ public class HandGiveAll extends JavaPlugin implements Listener {
 	public void onDisable() {
 		sendConsole("§a플러그인이 비활성화 되었습니다.");
 		sendConsole("§a플러그인제작자: horyu1234");
-		sendConsole("§aⓒ "+Calendar.getInstance().get(Calendar.YEAR)+" Horyu Systems Ltd, All Rights Reserved.");
+		sendConsole("§aCopyright 2014 ~ "+Calendar.getInstance().get(Calendar.YEAR)+" Horyu Systems Ltd, All Rights Reserved.");
 	}
 
 	public void onEnable() {
@@ -103,7 +103,6 @@ public class HandGiveAll extends JavaPlugin implements Listener {
 		new UpdateChecker(this, Bukkit.getConsoleSender());
 		PluginInfoChecker pluginInfoChecker = new PluginInfoChecker();
 		pluginInfo = pluginInfoChecker.getInfo(this);
-		getServer().getPluginManager().registerEvents(new HandGiveAllListener(this, pluginInfo), this);
 
 		if (enableutils.checkDisable(pluginInfo)) return;
 		if (enableutils.checkMD5(pluginInfo)) return;
@@ -115,6 +114,19 @@ public class HandGiveAll extends JavaPlugin implements Listener {
 			sendConsole("§e===========================");
 		}
 
+		getServer().getPluginManager().registerEvents(new HandGiveAllListener(this, pluginInfo), this);
+		/*
+		if (config_use_BungeeCord) {
+			this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+			this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+
+			ByteArrayDataOutput out = ByteStreams.newDataOutput();
+			out.writeUTF("GetServers");
+
+			this.getServer().sendPluginMessage(this, "BungeeCord", out.toByteArray());
+			sendConsole("§fBungeeCord 와 연결되어 있는지 확인 중입니다.");
+		}
+		*/
 		sendConsole("§a플러그인이 활성화 되었습니다.");
 		sendConsole("§a플러그인제작자: horyu1234");
 		sendConsole("§aCopyright 2014 ~ "+Calendar.getInstance().get(Calendar.YEAR)+" Horyu Systems Ltd, All Rights Reserved.");
@@ -236,7 +248,7 @@ public class HandGiveAll extends JavaPlugin implements Listener {
 						.substring(1));
 			}
 			fis.close();
-			return sb.toString();
+			return sb.toString().toUpperCase();
 		} catch (Exception e) { try { fis.close(); } catch (Exception e2) { }}
 		return null;
 	}
@@ -259,8 +271,22 @@ public class HandGiveAll extends JavaPlugin implements Listener {
 				for (String notice : pluginInfo.getNotices())
 					s.sendMessage(prefix + notice);
 				s.sendMessage(prefix + "§e===========================");
-			} else s.sendMessage(prefix + "공지 사항이 없습니다.");
+			} else s.sendMessage(prefix + "§f공지 사항이 없습니다.");
 		}
 		return false;
 	}
+
+	/*
+	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+		if (!channel.equals("BungeeCord")) return;
+
+		ByteArrayDataInput in = ByteStreams.newDataInput(message);
+		String subchannel = in.readUTF();
+		sendConsole("subchannel : " + subchannel);
+		if (subchannel.equals("SomeSubChannel")) {
+			// Use the code sample in the 'Response' sections below to read
+			// the data.
+		}
+	}
+	*/
 }

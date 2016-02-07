@@ -1,26 +1,26 @@
 #
-#HandGiveAll Config
-#Made By horyu1234
+# HandGiveAll Config
+# Made By horyu1234
 #
-#Copyright 2014 ~ 2015 . horyu1234 . All rights reserved
+# Copyright 2014 ~ 2015 . horyu1234 . All rights reserved
 #
 config: 1.5
-#플러그인의 EULA에 동의하신다면 EULA 옵션을 true 로 바꿔주세요.
-#EULA를 동의하셔야만 플러그인의 사용이 가능합니다.
+# 플러그인의 EULA에 동의하신다면 EULA 옵션을 true 로 바꿔주세요.
+# EULA를 동의하셔야만 플러그인의 사용이 가능합니다.
 #
-#EULA: https://horyu1234.com/EULA
+# EULA: https://horyu1234.com/EULA
 #
-#EULA: false
+# EULA: false EULA 에 동의하신다면, 이 값을 true 로 변경해주세요.
 #
-#show_console_msg: false 호스팅을 사용하여, 콘솔에 나오는 본 플러그인의 메시지들을 못보는 경우 이 옵션을 true 로 설정하시면 콘솔 내용이 서버내 채팅으로 나옵니다.
-#show_inv_full_msg: true 인벤토리가 꽉차여 아이템을 받지 못하였을 경우, 서버에 공지를 띄웁니다.
-#use_nickname: false 메시지에 사람의 아이디가아닌 닉네임을 사용합니다.
-#use_item_display_name: true 아이템에 이름이 따로 설정되어 있다면, 메시지에 해당 이름을 사용합니다.
-#use_firework: true 아이템 또는 돈을 모두에게 지급할 때 모두에게 폭죽을 터트립니다.
-#money_unit: "원" 서버의 화폐 단위를 입력해주세요. (화폐가 없다면 이 설정은 무시하세요)
-#max_point_count: 3 돈 관련 명령어에서 메시지에 표시할 소수점 자릿수를 설정해주세요. 최솟값: 1 (화폐가 없다면 이 설정은 무시하세요)
+# show_console_msg: false 호스팅을 사용하여, 콘솔에 나오는 본 플러그인의 메시지들을 못보는 경우 이 옵션을 true 로 설정하시면 콘솔 내용이 서버내 채팅으로 나옵니다.
+# show_inv_full_msg: true 인벤토리가 꽉차여 아이템을 받지 못하였을 경우, 서버에 공지를 띄웁니다.
+# use_nickname: false 메시지에 사람의 아이디가아닌 닉네임을 사용합니다.
+# use_item_display_name: true 아이템에 이름이 따로 설정되어 있다면, 메시지에 해당 이름을 사용합니다.
+# use_firework: true 아이템 또는 돈을 모두에게 지급할 때 모두에게 폭죽을 터트립니다.
+# money_unit: "원" 서버의 화폐 단위를 입력해주세요. (화폐가 없다면 이 설정은 무시하세요)
+# max_point_count: 3 돈 관련 명령어에서 메시지에 표시할 소수점 자릿수를 설정해주세요. 최솟값: 1 (화폐가 없다면 이 설정은 무시하세요)
 #
-#아래부터 실제 설정입니다.
+# ▼▼▼ 아래부터 설정을 해주시기 바랍니다. ▼▼▼
 
 EULA: false
 

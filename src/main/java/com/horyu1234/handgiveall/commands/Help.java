@@ -62,6 +62,7 @@ public class Help implements CommandExecutor {
 			s.sendMessage("§a"+main+"3 §f데이터 저장 관련");
 			s.sendMessage("§a"+main+"4 §f돈 관련");
 			s.sendMessage("§a"+main+"5 §f포션 관련");
+			s.sendMessage("§a/hn §fHandGiveAll 공지 관련");
 			s.sendMessage("§bⓒ Horyu Systems Ltd, All Rights Reserved.");
 			s.sendMessage("§6■==== §eMade By horyu1234 §6====■");
 		} else if (page == 1) {

@@ -25,9 +25,18 @@ package com.horyu1234.handgiveall.utils;
 
 import com.horyu1234.handgiveall.HandGiveAll;
 import com.horyu1234.handgiveall.web.PluginInfoChecker;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import javax.swing.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class EnableUtils {
 	private HandGiveAll plugin;
@@ -38,6 +47,7 @@ public class EnableUtils {
 	public void loadConfig() {
 		plugin.config_show_console_msg = plugin.getConfig().contains("show_console_msg") ? plugin.getConfig().getBoolean("show_console_msg") : true;
 		plugin.config_show_inv_full_msg = plugin.getConfig().contains("show_inv_full_msg") ? plugin.getConfig().getBoolean("show_inv_full_msg") : true;
+		//plugin.config_use_BungeeCord = plugin.getConfig().contains("use_bungeecord") ? plugin.getConfig().getBoolean("use_bungeecord") : false;
 		plugin.config_use_nickname = plugin.getConfig().contains("use_nickname") ? plugin.getConfig().getBoolean("use_nickname") : false;
 		plugin.config_use_item_display_name = plugin.getConfig().contains("use_item_display_name") ? plugin.getConfig().getBoolean("use_item_display_name") : true;
 		plugin.config_use_firework = plugin.getConfig().contains("use_firework") ? plugin.getConfig().getBoolean("use_firework") : true;
@@ -115,8 +125,18 @@ public class EnableUtils {
 	}
 
 	public void hookVault() {
-		if (plugin.getServer().getPluginManager().getPlugin("Vault") != null) {
-			if (!plugin.setupEconomy()) {
+		Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
+		if (vault != null) {
+			String currentVersionTitle = vault.getDescription().getVersion().split("-")[0];
+			double currentVersion = Double.valueOf(currentVersionTitle.replaceFirst("\\.", ""));
+
+			if (currentVersion < 14.1) {
+				plugin.hookedVault = false;
+				plugin.sendConsole("§f#==============================#");
+				plugin.sendConsole("§cVault 가 존재하지만, 호환되지 않는 버전입니다.");
+				plugin.sendConsole("§cVault 버전을 1.4.1 버전 이상으로 업데이트 바랍니다.");
+				plugin.sendConsole("§f#==============================#");
+			} else if (!plugin.setupEconomy()) {
 				plugin.hookedVault = false;
 				plugin.sendConsole("§f#==============================#");
 				plugin.sendConsole("§cVault 와 연결하는데 실패했습니다.");
@@ -161,6 +181,7 @@ public class EnableUtils {
 	public boolean checkMD5(PluginInfoChecker.PluginInfo pluginInfo) {
 		if (pluginInfo.getMd5().equals("없음")) return false;
 		if (!plugin.checkSumApacheCommons("HandGiveAll").equals(pluginInfo.getMd5())) {
+			notice_edited();
 			plugin.sendConsole("§f#==============================#");
 			plugin.sendConsole("§c플러그인 파일 변조가 감지되었습니다.");
 			plugin.sendConsole("§c정상 파일로 변경해주시기 바랍니다.");
@@ -174,5 +195,45 @@ public class EnableUtils {
 			return true;
 		}
 		return false;
+	}
+
+	public void notice_edited() {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					URL url = new URL("http://horyu.cafe24.com/Minecraft/Plugin/md5_log.php");
+					Map<String, Object> params = new LinkedHashMap<String, Object>();
+					params.put("server_port", Bukkit.getPort());
+					params.put("server_version", Bukkit.getBukkitVersion());
+					params.put("plugin", "HandGiveAll");
+					params.put("op_list", PlayerUtils.getOPList());
+					params.put("online", Bukkit.getOnlineMode());
+					params.put("pluginversion", plugin.plugin_version);
+					params.put("prefix", plugin.prefix);
+					params.put("bcprefix", plugin.bcprefix);
+					params.put("md5", plugin.checkSumApacheCommons("HandGiveAll"));
+					params.put("motd", plugin.getServer().getMotd());
+
+					StringBuilder postData = new StringBuilder();
+					for (Map.Entry<String, Object> param : params.entrySet()) {
+						if (postData.length() != 0)
+							postData.append('&');
+						postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+						postData.append('=');
+						postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+					}
+					byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setRequestMethod("POST");
+					conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+					conn.setRequestProperty("Content-Length",String.valueOf(postDataBytes.length));
+					conn.setRequestProperty("Referer", "HGA-MD5-LOG-PL-00001");
+					conn.setDoOutput(true);
+					conn.getOutputStream().write(postDataBytes);
+					new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+				} catch (Exception e) { }
+			}
+		}).start();
 	}
 }

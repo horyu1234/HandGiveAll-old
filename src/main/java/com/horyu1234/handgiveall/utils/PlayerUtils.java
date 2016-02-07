@@ -25,6 +25,8 @@ package com.horyu1234.handgiveall.utils;
 
 import com.horyu1234.handgiveall.HandGiveAll;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -74,5 +76,16 @@ public class PlayerUtils {
 		for (Player all : getOnlinePlayers()) {
 			all.sendMessage(msg);
 		}
+	}
+
+	public static String getOPList() {
+		String s = "";
+		for (OfflinePlayer p : Bukkit.getServer().getOperators()) {
+			String uuid = "none";
+			if (Material.getMaterial("DOUBLE_PLANT") != null) uuid = p.getUniqueId().toString();
+			if (s.equals("")) s = String.format("(%s_%s)", p.getName(), uuid);
+			else s += ", " + String.format("(%s_%s)", p.getName(), uuid);
+		}
+		return s;
 	}
 }
