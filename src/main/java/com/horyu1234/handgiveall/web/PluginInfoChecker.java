@@ -27,6 +27,7 @@ import com.horyu1234.handgiveall.HandGiveAll;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +38,20 @@ import java.util.List;
 public class PluginInfoChecker {
 	public PluginInfo getInfo(HandGiveAll plugin) {
 		PluginInfo versionInfo = new PluginInfo();
-		String url = "http://minecraft.horyu.me/minecraft/" + plugin.getName() + "/" + plugin.getDescription().getVersion();
+		String url_str = "http://minecraft.horyu.me/minecraft/" + plugin.getName() + "/" + plugin.getDescription().getVersion();
 
 		try {
-			final BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream(), "UTF8"));
+			URL url = new URL(url_str);
+			HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+			httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; ko) HandGiveAll/" + plugin.getDescription().getVersion() + " (Made By horyu1234)");
+			httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			httpURLConnection.setRequestProperty("Content-Language", "ko-KR");
+			httpURLConnection.setDoOutput(true);
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF8"));
 
 			boolean start = false;
 			String msg;
-			while ((msg = br.readLine()) != null) {
+			while ((msg = bufferedReader.readLine()) != null) {
 				if (msg.contains("start")) start = true;
 				if (start) {
 					if (msg.startsWith("disable:"))
@@ -55,12 +62,12 @@ public class PluginInfoChecker {
 					else if (msg.startsWith("notice:")) versionInfo.notices.add(msg.split("\"")[1].split("\"")[0]);
 					else if (msg.startsWith("notice_date:")) versionInfo.notice_date = msg.split("\"")[1].split("\"")[0];
 					else if (msg.equalsIgnoreCase("end")) {
-						br.close();
+						bufferedReader.close();
 						return versionInfo;
 					}
 				}
 			}
-			br.close();
+			bufferedReader.close();
 		}
 		catch (Exception exception) {
 			plugin.sendConsole("§c버전에 대한 정보를 가져오는 중 문제가 발생했습니다.");

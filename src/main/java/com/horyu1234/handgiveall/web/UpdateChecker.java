@@ -29,29 +29,36 @@ import org.bukkit.command.CommandSender;
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class UpdateChecker implements Runnable
 {
 	private HandGiveAll plugin;
 	private CommandSender sender;
-	private String url;
+	private String url_str;
 
 	public UpdateChecker(final HandGiveAll plugin, final CommandSender sender) {
 		this.plugin = plugin;
 		this.sender = sender;
-		this.url = "http://minecraft.horyu.me/minecraft/" + plugin.getName() + "/version";
+		this.url_str = "http://minecraft.horyu.me/minecraft/" + plugin.getName() + "/version";
 		new Thread(this).start();
 	}
 
 	public void run() {
 		try {
-			final BufferedReader br = new BufferedReader(new InputStreamReader(new URL(this.url).openStream(), "UTF8"));
+			URL url = new URL(url_str);
+			HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+			httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; ko) HandGiveAll/" + plugin.getDescription().getVersion() + " (Made By horyu1234)");
+			httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			httpURLConnection.setRequestProperty("Content-Language", "ko-KR");
+			httpURLConnection.setDoOutput(true);
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF8"));
 
 			String msg;
-			while ((msg = br.readLine()) != null) {
+			while ((msg = bufferedReader.readLine()) != null) {
 				double plugin_version = Double.parseDouble(msg);
-				br.close();
+				bufferedReader.close();
 
 				if (plugin_version > plugin.plugin_version) {
 					sender.sendMessage(plugin.prefix + "§b#==============================#");
@@ -74,7 +81,7 @@ public class UpdateChecker implements Runnable
 				}
 				return;
 			}
-			br.close();
+			bufferedReader.close();
 		}
 		catch (Exception exception) {
 			plugin.sendConsole("§c업데이트를 확인하는 중 문제가 발생했습니다.");
