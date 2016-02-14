@@ -34,7 +34,7 @@ public class FireworkUtils {
 	}
 	
 	public void launchFireworkToAll() {
-		if (plugin.getConfig().getBoolean("firework"))
+		if (plugin.config_use_firework)
 			for (Player all : PlayerUtils.getOnlinePlayers())
 				RandomFireworks.getManager().launchRandomFirework(all.getLocation());
 	}
