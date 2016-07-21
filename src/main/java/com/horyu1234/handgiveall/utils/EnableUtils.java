@@ -23,36 +23,40 @@
 
 package com.horyu1234.handgiveall.utils;
 
+import com.google.common.io.Files;
+import com.horyu1234.handgiveall.HGAYamlConfiguration;
 import com.horyu1234.handgiveall.HandGiveAll;
 import com.horyu1234.handgiveall.web.PluginInfoChecker;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class EnableUtils {
 	private HandGiveAll plugin;
+    public HGAYamlConfiguration config = new HGAYamlConfiguration();
 	public EnableUtils(HandGiveAll pl) {
 		this.plugin = pl;
 	}
 
 	public void loadConfig() {
-		plugin.config_show_console_msg = plugin.getConfig().contains("show_console_msg") ? plugin.getConfig().getBoolean("show_console_msg") : true;
-		plugin.config_show_inv_full_msg = plugin.getConfig().contains("show_inv_full_msg") ? plugin.getConfig().getBoolean("show_inv_full_msg") : true;
-		//plugin.config_use_BungeeCord = plugin.getConfig().contains("use_bungeecord") ? plugin.getConfig().getBoolean("use_bungeecord") : false;
-		plugin.config_use_nickname = plugin.getConfig().contains("use_nickname") ? plugin.getConfig().getBoolean("use_nickname") : false;
-		plugin.config_use_item_display_name = plugin.getConfig().contains("use_item_display_name") ? plugin.getConfig().getBoolean("use_item_display_name") : true;
-		plugin.config_use_firework = plugin.getConfig().contains("use_firework") ? plugin.getConfig().getBoolean("use_firework") : true;
-		plugin.config_money_unit = plugin.getConfig().contains("money_unit") ? plugin.getConfig().getString("money_unit") : "원";
-		plugin.config_max_point_count = plugin.getConfig().contains("max_point_count") ? plugin.getConfig().getInt("max_point_count") : 3;
+		plugin.config_show_console_msg = config.contains("show_console_msg") ? config.getBoolean("show_console_msg") : true;
+		plugin.config_show_inv_full_msg = config.contains("show_inv_full_msg") ? config.getBoolean("show_inv_full_msg") : true;
+        plugin.config_show_message_box = config.contains("show_message_box") ? config.getBoolean("show_message_box") : true;
+		//plugin.config_use_BungeeCord = config.contains("use_bungeecord") ? config.getBoolean("use_bungeecord") : false;
+		plugin.config_use_nickname = config.contains("use_nickname") ? config.getBoolean("use_nickname") : false;
+		plugin.config_use_item_display_name = config.contains("use_item_display_name") ? config.getBoolean("use_item_display_name") : true;
+		plugin.config_use_firework = config.contains("use_firework") ? config.getBoolean("use_firework") : true;
+		plugin.config_money_unit = config.contains("money_unit") ? config.getString("money_unit") : "원";
+		plugin.config_max_point_count = config.contains("max_point_count") ? config.getInt("max_point_count") : 3;
 	}
 
 	public boolean checkDisable(PluginInfoChecker.PluginInfo pluginInfo) {
@@ -64,11 +68,13 @@ public class EnableUtils {
 			plugin.sendConsole("§4사유: ");
 			plugin.sendConsole("  \"" + pluginInfo.getDisable_message() + "\"");
 			plugin.sendConsole("§c#==============================#");
-			new Thread(new Runnable() {
-				public void run() {
-					JOptionPane.showMessageDialog(null, "본 플러그인의 제작자가 플러그인의 구동을 비활성화하여\n플러그인의 구동이 제한됩니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
-				}
-			}).start();
+			if (plugin.config_show_message_box) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(null, "본 플러그인의 제작자가 플러그인의 구동을 비활성화하여\n플러그인의 구동이 제한됩니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
+                    }
+                }).start();
+            }
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return true;
 		}
@@ -78,10 +84,34 @@ public class EnableUtils {
 	public void checkData() {
 		if (!new File(plugin.getDataFolder(), "config.yml").exists()) {
 			plugin.sendConsole("§c설정 파일을 찾을 수 없습니다. 새로 생성을 시작합니다...");
-			plugin.saveDefaultConfig();
+            plugin.saveResource("config.yml", false);
 			plugin.sendConsole("§a완료");
-			plugin.reloadConfig();
 		}
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("plugins/HandGiveAll/config.yml")), Charset.forName("UTF-8")));
+            String datas = "", str;
+            while ((str = bufferedReader.readLine()) != null) {
+                datas += str + "\n";
+                System.out.println("str: " + str);
+            }
+            bufferedReader.close();
+
+            System.out.println(datas);
+            this.config.loadFromString(datas);
+        } catch (Exception e) {
+            plugin.sendConsole("§c콘피그를 불러오는 중 오류가 발생했습니다.");
+            plugin.sendConsole("§c메시지: " + e.getMessage());
+            if (plugin.config_show_message_box) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(null, "콘피그를 불러오는 중 오류가 발생했습니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
+                    }
+                }).start();
+            }
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+        }
+
 		File a = new File("plugins/HandGiveAll/items");
 		if (!a.exists()) {
 			plugin.sendConsole("§c데이터 폴더를 찾을 수 없습니다. 새로 생성을 시작합니다...");
@@ -91,16 +121,18 @@ public class EnableUtils {
 	}
 
 	public boolean checkEULA() {
-		if (!plugin.getConfig().getBoolean("EULA")) {
+		if (!config.getBoolean("EULA")) {
 			plugin.sendConsole("§f#==============================#");
 			plugin.sendConsole("§cConfig 에서 플러그인의 EULA에 동의해주세요!!");
 			plugin.sendConsole("§cEULA를 동의하지 않으시면 플러그인의 사용이 불가능합니다.");
 			plugin.sendConsole("§f#==============================#");
-			new Thread(new Runnable() {
-				public void run() {
-					JOptionPane.showMessageDialog(null, "Config 에서 플러그인의 EULA 에 동의해주시기 바랍니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
-				}
-			}).start();
+            if (plugin.config_show_message_box) {
+                new Thread(new Runnable() {
+                    public void run() {
+                    JOptionPane.showMessageDialog(null, "Config 에서 플러그인의 EULA 에 동의해주시기 바랍니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
+                    }
+                }).start();
+            }
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return false;
 		}
@@ -108,16 +140,18 @@ public class EnableUtils {
 	}
 
 	public boolean checkConfigVersion() {
-		if (plugin.getConfig().getDouble("config") != 1.5) {
+		if (config.getDouble("config") != 1.6) {
 			plugin.sendConsole("§f#==============================#");
 			plugin.sendConsole("§cConfig 의 버전이 맞지 않습니다!");
 			plugin.sendConsole("§cHandGiveAll 폴더 안의 config.yml 을 삭제하신 후 플러그인을 다시 실행해주시기 바랍니다.");
 			plugin.sendConsole("§f#==============================#");
-			new Thread(new Runnable() {
-				public void run() {
-					JOptionPane.showMessageDialog(null, "Config 의 버전이 맞지 않습니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
-				}
-			}).start();
+            if (plugin.config_show_message_box) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(null, "Config 의 버전이 맞지 않습니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
+                    }
+                }).start();
+            }
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return true;
 		}
@@ -167,11 +201,13 @@ public class EnableUtils {
 				plugin.sendConsole("§f현재 이름: §c"+jar.getName());
 				plugin.sendConsole("§f정상 이름: §aHandGiveAll v" + plugin.plugin_version + ".jar");
 				plugin.sendConsole("§f#==============================#");
-				new Thread(new Runnable() {
-					public void run() {
-						JOptionPane.showMessageDialog(null, "플러그인 파일 이름 변경이 감지되었습니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
-					}
-				}).start();
+                if (plugin.config_show_message_box) {
+                    new Thread(new Runnable() {
+                        public void run() {
+                        JOptionPane.showMessageDialog(null, "플러그인 파일 이름 변경이 감지되었습니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
+                        }
+                    }).start();
+                }
 				plugin.getServer().getPluginManager().disablePlugin(plugin);
 				return true;
 			}
@@ -187,11 +223,13 @@ public class EnableUtils {
 			plugin.sendConsole("§c플러그인 파일 변조가 감지되었습니다.");
 			plugin.sendConsole("§c정상 파일로 변경해주시기 바랍니다.");
 			plugin.sendConsole("§f#==============================#");
-			new Thread(new Runnable() {
-				public void run() {
-					JOptionPane.showMessageDialog(null, "플러그인 파일 변조가 감지되었습니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
-				}
-			}).start();
+            if (plugin.config_show_message_box) {
+                new Thread(new Runnable() {
+                    public void run() {
+                    JOptionPane.showMessageDialog(null, "플러그인 파일 변조가 감지되었습니다.", "HandGiveAll v" + plugin.plugin_version, JOptionPane.ERROR_MESSAGE);
+                    }
+                }).start();
+            }
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return true;
 		}

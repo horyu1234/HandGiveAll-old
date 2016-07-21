@@ -65,6 +65,7 @@ public class HandGiveAll extends JavaPlugin {
 	//=================
 	public boolean config_show_console_msg = false;
 	public boolean config_show_inv_full_msg = true;
+    public boolean config_show_message_box = true;
 	//public boolean config_use_BungeeCord = false;
 	public boolean config_use_nickname = false;
 	public boolean config_use_item_display_name = true;
@@ -86,8 +87,9 @@ public class HandGiveAll extends JavaPlugin {
 		prefix = "§b§l[§f§lHandGiveAll v" + plugin_version + "§b§l] §r";
 		bcprefix = "§b§l[§f§lHGA v" + plugin_version + "§b§l] §r";
 
+        sendConsole("§f플러그인 설치 중입니다. 잠시만 기다려주세요...");
+
 		initClasses();
-		sendConsole("§f플러그인 설치 중입니다. 잠시만 기다려주세요...");
 
 		if (enableutils.checkFileName()) return;
 

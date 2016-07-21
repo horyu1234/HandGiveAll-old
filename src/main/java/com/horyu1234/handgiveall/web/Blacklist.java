@@ -66,7 +66,7 @@ public class Blacklist {
 						String line;
 						while ((line = br.readLine()) != null) {
 							for (String value : line.split("</br>")) {
-								if (value.isEmpty() || value.equals(" ")
+								if (value.equals(" ")
 										|| value.startsWith("ban_date | "))
 									continue;
 
