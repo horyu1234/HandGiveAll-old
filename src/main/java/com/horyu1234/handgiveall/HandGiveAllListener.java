@@ -50,6 +50,7 @@ public class HandGiveAllListener implements Listener {
     public HandGiveAllListener(HandGiveAll pl, PluginInfoChecker.PluginInfo pluginInfo) {
         this.plugin = pl;
         this.pluginInfo = pluginInfo;
+        Blacklist.init(pl);
     }
 
     @EventHandler
