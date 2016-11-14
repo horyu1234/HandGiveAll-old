@@ -114,6 +114,7 @@ public class HandGiveAll extends JavaPlugin {
             use_korean = false;
             LanguageUtils.setEnglish();
             sendConsole("§dLanguage was set to English");
+            sendConsole("§dSpecial thanks to Peulia for his English translation.");
         } else {
             // use korean
             use_korean = true;
