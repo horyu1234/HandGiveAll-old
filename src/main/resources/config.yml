@@ -24,6 +24,7 @@ config: 1.6
 # ▼▼▼ 아래부터 설정을 해주시기 바랍니다. ▼▼▼
 
 EULA: false
+use_english: false
 
 show_console_msg: false
 show_inv_full_msg: true

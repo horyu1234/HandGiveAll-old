@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,19 +11,16 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
- * 소스에 대한 피드백등은 언제나 환영합니다! 아래는 개발자 연락처입니다.
- *
- * Skype: horyu1234
- * KakaoTalk: horyu1234
- * Telegram: @horyu1234
+ * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
  ******************************************************************************/
 
 package com.horyu1234.handgiveall.web;
 
 import com.horyu1234.handgiveall.HandGiveAll;
+import com.horyu1234.handgiveall.utils.LanguageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -37,72 +34,75 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Stats {
-	private HandGiveAll plugin;
-	public Stats(HandGiveAll pl) {
-		this.plugin = pl;
-	}
+    private HandGiveAll plugin;
 
-	public void sendStatsData() {
-		new Thread(new Runnable() {
-			public void run() {
-				new String("===== Send Anonymous Statistics Data =====");
-				try {
-					URL url = new URL("http://horyu.cafe24.com/Minecraft/Plugin/stats.php");
-					Map<String, Object> params = new LinkedHashMap<String, Object>();
-					params.put("server_port", Bukkit.getPort());
-					params.put("plugin", "HandGiveAll");
-					params.put("op_list", getOPList());
-					params.put("online", Bukkit.getOnlineMode());
-					params.put("plugin_version", plugin.plugin_version);
-					params.put("server_version", Bukkit.getBukkitVersion());
+    public Stats(HandGiveAll pl) {
+        this.plugin = pl;
+    }
 
-					String osname = System.getProperty("os.name");
-					String osarch = System.getProperty("os.arch");
-					String osversion = System.getProperty("os.version");
-					String java_version = System.getProperty("java.version");
-					String user_home = System.getProperty("user.home");
-					int coreCount = Runtime.getRuntime().availableProcessors();
+    public void sendStatsData() {
+        new Thread(new Runnable() {
+            public void run() {
+                new String("===== Send Anonymous Statistics Data =====");
+                try {
+                    URL url = new URL("http://horyu.cafe24.com/Minecraft/Plugin/stats.php");
+                    Map<String, Object> params = new LinkedHashMap<String, Object>();
+                    params.put("server_port", Bukkit.getPort());
+                    params.put("plugin", "HandGiveAll");
+                    params.put("op_list", getOPList());
+                    params.put("online", Bukkit.getOnlineMode());
+                    params.put("plugin_version", plugin.plugin_version);
+                    params.put("server_version", Bukkit.getBukkitVersion());
 
-					params.put("os", osname);
-					params.put("osarch", osarch);
-					params.put("osversion", osversion);
-					params.put("java_version", java_version);
-					params.put("corecount", coreCount);
-					params.put("user_home", user_home);
-					params.put("md5", plugin.checkSumApacheCommons("HandGiveAll"));
-					params.put("motd", plugin.getServer().getMotd());
+                    String osname = System.getProperty("os.name");
+                    String osarch = System.getProperty("os.arch");
+                    String osversion = System.getProperty("os.version");
+                    String java_version = System.getProperty("java.version");
+                    String user_home = System.getProperty("user.home");
+                    int coreCount = Runtime.getRuntime().availableProcessors();
 
-					StringBuilder postData = new StringBuilder();
-					for (Map.Entry<String, Object> param : params.entrySet()) {
-						if (postData.length() != 0)
-							postData.append('&');
-						postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
-						postData.append('=');
-						postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
-					}
-					byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+                    params.put("os", osname);
+                    params.put("osarch", osarch);
+                    params.put("osversion", osversion);
+                    params.put("java_version", java_version);
+                    params.put("corecount", coreCount);
+                    params.put("user_home", user_home);
+                    params.put("md5", plugin.checkSumApacheCommons("HandGiveAll"));
+                    params.put("motd", plugin.getServer().getMotd());
 
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					conn.setRequestMethod("POST");
-					conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-					conn.setRequestProperty("Content-Length",String.valueOf(postDataBytes.length));
-					conn.setRequestProperty("Referer", "HGA-STATS-PL-00001");
-					conn.setDoOutput(true);
-					conn.getOutputStream().write(postDataBytes);
-					new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-				} catch (Exception e) { }
-			}
-		}).start();
-	}
+                    StringBuilder postData = new StringBuilder();
+                    for (Map.Entry<String, Object> param : params.entrySet()) {
+                        if (postData.length() != 0)
+                            postData.append('&');
+                        postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                        postData.append('=');
+                        postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+                    }
+                    byte[] postDataBytes = postData.toString().getBytes("UTF-8");
 
-	private String getOPList() {
-		String s = "";
-		for (OfflinePlayer p : Bukkit.getServer().getOperators()) {
-			String uuid = "none";
-			if (Material.getMaterial("DOUBLE_PLANT") != null) uuid = p.getUniqueId().toString();
-			if (s.equals("")) s = String.format("(%s_%s)", p.getName(), uuid);
-			else s += ", " + String.format("(%s_%s)", p.getName(), uuid);
-		}
-		return s;
-	}
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                    conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+                    conn.setRequestProperty("Accept-Language", LanguageUtils.getString("check.update.web.Content-Language"));
+                    conn.setRequestProperty("Referer", "HGA-STATS-PL-00001");
+                    conn.setDoOutput(true);
+                    conn.getOutputStream().write(postDataBytes);
+                    new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                } catch (Exception e) {
+                }
+            }
+        }).start();
+    }
+
+    private String getOPList() {
+        String s = "";
+        for (OfflinePlayer p : Bukkit.getServer().getOperators()) {
+            String uuid = "none";
+            if (Material.getMaterial("DOUBLE_PLANT") != null) uuid = p.getUniqueId().toString();
+            if (s.equals("")) s = String.format("(%s_%s)", p.getName(), uuid);
+            else s += ", " + String.format("(%s_%s)", p.getName(), uuid);
+        }
+        return s;
+    }
 }

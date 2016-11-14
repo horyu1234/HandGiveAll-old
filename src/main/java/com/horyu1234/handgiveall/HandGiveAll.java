@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,14 +11,10 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
- * 소스에 대한 피드백등은 언제나 환영합니다! 아래는 개발자 연락처입니다.
- *
- * Skype: horyu1234
- * KakaoTalk: horyu1234
- * Telegram: @horyu1234
+ * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
  ******************************************************************************/
 
 package com.horyu1234.handgiveall;
@@ -37,88 +33,127 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class HandGiveAll extends JavaPlugin {
-	public String prefix, bcprefix;
-	public double plugin_version;
-	public boolean hookedVault = false;
-	public Economy economy = null;
-	private PluginInfoChecker.PluginInfo pluginInfo;
-	//=================
-	private NumberUtils numberutil;
-	private PlayerUtils playerutil;
-	private ItemUtils itemutil;
-	private FireworkUtils fireworkutil;
-	private EnableUtils enableutils;
-	private ReflectionUtils reflectionutils;
-	//=================
-	private Help command_help;
-	private HandGiveAll_c command_HandGiveAll_c;
-	private HandCheckAll_c command_HandCheckAll_c;
-	private DataGiveAll_c command_DataGiveAll_c;
-	private MoneyGiveAll_c command_MoneyGiveAll_c;
-	private PotionGiveAll_c command_PotionGiveAll_c;
-	//=================
-	public boolean config_show_console_msg = false;
-	public boolean config_show_inv_full_msg = true;
+    public String prefix, bcprefix;
+    public double plugin_version;
+    public boolean hookedVault = false;
+    public Economy economy = null;
+    private PluginInfoChecker.PluginInfo pluginInfo;
+    //=================
+    private NumberUtils numberutil;
+    private PlayerUtils playerutil;
+    private ItemUtils itemutil;
+    private FireworkUtils fireworkutil;
+    private EnableUtils enableutils;
+    private ReflectionUtils reflectionutils;
+    //=================
+    private Help command_help;
+    private HandGiveAll_c command_HandGiveAll_c;
+    private HandCheckAll_c command_HandCheckAll_c;
+    private DataGiveAll_c command_DataGiveAll_c;
+    private MoneyGiveAll_c command_MoneyGiveAll_c;
+    private PotionGiveAll_c command_PotionGiveAll_c;
+    //=================
+    public boolean use_korean = false;
+    public boolean config_show_console_msg = false;
+    public boolean config_show_inv_full_msg = true;
     public boolean config_show_message_box = true;
-	//public boolean config_use_BungeeCord = false;
-	public boolean config_use_nickname = false;
-	public boolean config_use_item_display_name = true;
-	public boolean config_use_firework = false;
-	public String config_money_unit = "원";
-	public int config_max_point_count = 3;
+    //public boolean config_use_BungeeCord = false;
+    public boolean config_use_nickname = false;
+    public boolean config_use_item_display_name = true;
+    public boolean config_use_firework = false;
+    public String config_money_unit = "원";
+    public int config_max_point_count = 3;
 
 
-	public void onDisable() {
-		sendConsole("§a플러그인이 비활성화 되었습니다.");
-		sendConsole("§a플러그인제작자: horyu1234");
-		sendConsole("§aCopyright 2014 ~ "+Calendar.getInstance().get(Calendar.YEAR)+" Horyu Systems Ltd, All Rights Reserved.");
-	}
+    public void onDisable() {
+        sendConsole(LanguageUtils.getString("disable.done.1"));
+        sendConsole(LanguageUtils.getString("disable.done.2"));
+        sendConsole(LanguageUtils.getString("disable.done.3").replace("@currentYear@", Calendar.getInstance().get(Calendar.YEAR) + ""));
+    }
 
-	public void onEnable() {
-		PluginDescriptionFile pdf = getDescription();
-		plugin_version = Double.parseDouble(pdf.getVersion());
+    public void onEnable() {
+        PluginDescriptionFile pdf = getDescription();
+        plugin_version = Double.parseDouble(pdf.getVersion());
 
-		prefix = "§b§l[§f§lHandGiveAll v" + plugin_version + "§b§l] §r";
-		bcprefix = "§b§l[§f§lHGA v" + plugin_version + "§b§l] §r";
+        prefix = "§b§l[§f§lHandGiveAll v" + plugin_version + "§b§l] §r";
+        bcprefix = "§b§l[§f§lHGA v" + plugin_version + "§b§l] §r";
 
-        sendConsole("§f플러그인 설치 중입니다. 잠시만 기다려주세요...");
+        if (!new File(getDataFolder(), "config.yml").exists()) {
+            sendConsole(LanguageUtils.getString("check.data.create.config"));
+            saveResource("config.yml", false);
+            sendConsole(LanguageUtils.getString("check.data.create_done.config"));
+        }
 
-		initClasses();
+        HGAYamlConfiguration config = new HGAYamlConfiguration();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("plugins/HandGiveAll/config.yml")), Charset.forName("UTF-8")));
+            String datas = "", str;
+            while ((str = bufferedReader.readLine()) != null) {
+                datas += str + "\n";
+            }
+            bufferedReader.close();
 
-		if (enableutils.checkFileName()) return;
+            config.loadFromString(datas);
+        } catch (Exception e) {
+            sendConsole("§cAn error occurred while loading config.yml");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        if (!config.contains("use_english") || config.getBoolean("use_english")) {
+            // use english
+            use_korean = false;
+            LanguageUtils.setEnglish();
+            sendConsole("§dLanguage was set to English");
+        } else {
+            // use korean
+            use_korean = true;
+            LanguageUtils.setKorean();
+            sendConsole("§d사용 언어가 한국어로 설정되었습니다.");
+        }
 
-		enableutils.checkData();
-		if (!enableutils.checkEULA()) return;
+        sendConsole(LanguageUtils.getString("enable.installing"));
 
-		if (enableutils.checkConfigVersion()) return;
-		enableutils.loadConfig();
+        registerLibrary("gson-2.7.jar");
 
-		enableutils.hookVault();
-		initCommands();
+        initClasses();
 
-		new UpdateChecker(this, Bukkit.getConsoleSender());
-		PluginInfoChecker pluginInfoChecker = new PluginInfoChecker();
-		pluginInfo = pluginInfoChecker.getInfo(this);
+        if (enableutils.checkFileName()) return;
 
-		if (enableutils.checkDisable(pluginInfo)) return;
-		if (enableutils.checkMD5(pluginInfo)) return;
-		if (pluginInfo.getNotices().size() > 0)
-		{
-			sendConsole("§e=====§b§l[ §aHandGiveAll 공지 §b§l]§e=====");
-			for (String notice : pluginInfo.getNotices())
-				sendConsole(notice);
-			sendConsole("§e===========================");
-		}
+        enableutils.checkData();
+        if (!enableutils.checkEULA()) return;
 
-		getServer().getPluginManager().registerEvents(new HandGiveAllListener(this, pluginInfo), this);
-		/*
-		if (config_use_BungeeCord) {
+        if (enableutils.checkConfigVersion()) return;
+        enableutils.loadConfig();
+
+        enableutils.hookVault();
+        initCommands();
+
+        new UpdateChecker(this, Bukkit.getConsoleSender());
+        PluginInfoChecker pluginInfoChecker = new PluginInfoChecker();
+        pluginInfo = pluginInfoChecker.getInfo(this);
+
+        if (enableutils.checkDisable(pluginInfo)) return;
+        if (enableutils.checkMD5(pluginInfo)) return;
+        if (pluginInfo.getNotices().size() > 0) {
+            sendConsole(LanguageUtils.getString("enable.notices.header"));
+            for (String notice : pluginInfo.getNotices())
+                sendConsole(notice);
+            sendConsole(LanguageUtils.getString("enable.notices.footer"));
+        }
+
+        getServer().getPluginManager().registerEvents(new HandGiveAllListener(this, pluginInfo), this);
+        /*
+        if (config_use_BungeeCord) {
 			this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 			this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
 
@@ -129,154 +164,176 @@ public class HandGiveAll extends JavaPlugin {
 			sendConsole("§fBungeeCord 와 연결되어 있는지 확인 중입니다.");
 		}
 		*/
-		sendConsole("§a플러그인이 활성화 되었습니다.");
-		sendConsole("§a플러그인제작자: horyu1234");
-		sendConsole("§aCopyright 2014 ~ "+Calendar.getInstance().get(Calendar.YEAR)+" Horyu Systems Ltd, All Rights Reserved.");
-	}
+        sendConsole(LanguageUtils.getString("enable.done.1"));
+        sendConsole(LanguageUtils.getString("enable.done.2"));
+        sendConsole(LanguageUtils.getString("enable.done.3").replace("@currentYear@", Calendar.getInstance().get(Calendar.YEAR) + ""));
+    }
 
-	public void sendConsole(String msg) {
-		if (config_show_console_msg) {
-			PlayerUtils.sendMsg(prefix + msg);
-		} else {
-			getServer().getConsoleSender().sendMessage(prefix + msg);
-		}
-	}
+    public void sendConsole(String msg) {
+        if (config_show_console_msg) {
+            PlayerUtils.sendMsg(prefix + msg);
+        } else {
+            getServer().getConsoleSender().sendMessage(prefix + msg);
+        }
+    }
 
-	public boolean setupEconomy() {
-		RegisteredServiceProvider<Economy> economyProvider = getServer()
-				.getServicesManager().getRegistration(
-						net.milkbowl.vault.economy.Economy.class);
-		if (economyProvider != null)
-			economy = economyProvider.getProvider();
-		return (economy != null);
-	}
+    public boolean setupEconomy() {
+        RegisteredServiceProvider<Economy> economyProvider = getServer()
+                .getServicesManager().getRegistration(
+                        net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null)
+            economy = economyProvider.getProvider();
+        return (economy != null);
+    }
 
-	public void initClasses() {
-		enableutils = new EnableUtils(this);
-		numberutil = new NumberUtils(this);
-		playerutil = new PlayerUtils(this);
-		itemutil = new ItemUtils(this);
-		fireworkutil = new FireworkUtils(this);
-		reflectionutils = new ReflectionUtils(this);
-		RandomFireworks.getManager().addColors();
-		RandomFireworks.getManager().addTypes();
-	}
+    private void initClasses() {
+        enableutils = new EnableUtils(this);
+        numberutil = new NumberUtils(this);
+        playerutil = new PlayerUtils(this);
+        itemutil = new ItemUtils(this);
+        fireworkutil = new FireworkUtils(this);
+        reflectionutils = new ReflectionUtils(this);
+        RandomFireworks.getManager().addColors();
+        RandomFireworks.getManager().addTypes();
+    }
 
-	public void initCommands() {
-		command_HandGiveAll_c = new HandGiveAll_c(this);
-		command_HandCheckAll_c = new HandCheckAll_c(this);
-		command_DataGiveAll_c = new DataGiveAll_c(this);
-		command_MoneyGiveAll_c = new MoneyGiveAll_c(this);
-		command_PotionGiveAll_c = new PotionGiveAll_c(this);
-		command_help = new Help(this);
-		getCommand("hh").setExecutor(command_help);
-		getCommand("hga").setExecutor(command_HandGiveAll_c);
-		getCommand("hgar").setExecutor(command_HandGiveAll_c);
-		getCommand("hgac").setExecutor(command_HandGiveAll_c);
-		getCommand("hgacr").setExecutor(command_HandGiveAll_c);
-		getCommand("hca").setExecutor(command_HandCheckAll_c);
-		getCommand("dga").setExecutor(command_DataGiveAll_c);
-		getCommand("mga").setExecutor(command_MoneyGiveAll_c);
-		getCommand("pga").setExecutor(command_PotionGiveAll_c);
-		Stats stats = new Stats(this);
-		stats.sendStatsData();
-	}
+    private void initCommands() {
+        command_HandGiveAll_c = new HandGiveAll_c(this);
+        command_HandCheckAll_c = new HandCheckAll_c(this);
+        command_DataGiveAll_c = new DataGiveAll_c(this);
+        command_MoneyGiveAll_c = new MoneyGiveAll_c(this);
+        command_PotionGiveAll_c = new PotionGiveAll_c(this);
+        command_help = new Help(this);
+        getCommand("hh").setExecutor(command_help);
+        getCommand("hga").setExecutor(command_HandGiveAll_c);
+        getCommand("hgar").setExecutor(command_HandGiveAll_c);
+        getCommand("hgac").setExecutor(command_HandGiveAll_c);
+        getCommand("hgacr").setExecutor(command_HandGiveAll_c);
+        getCommand("hca").setExecutor(command_HandCheckAll_c);
+        getCommand("dga").setExecutor(command_DataGiveAll_c);
+        getCommand("mga").setExecutor(command_MoneyGiveAll_c);
+        getCommand("pga").setExecutor(command_PotionGiveAll_c);
+        Stats stats = new Stats(this);
+        stats.sendStatsData();
+    }
 
-	public NumberUtils getNumberUtil() { return this.numberutil; }
-	public Help getHelp() { return this.command_help; }
-	public PlayerUtils getPlayerUtils() { return this.playerutil; }
-	public ItemUtils getItemUtils() { return this.itemutil; }
-	public FireworkUtils getFireworkUtils() { return this.fireworkutil; }
-	public ReflectionUtils getReflectionUtils() { return this.reflectionutils; }
+    public NumberUtils getNumberUtil() {
+        return this.numberutil;
+    }
 
-	public void error_notice(Exception e) {
-		File a = new File("plugins/HandGiveAll/errors");
-		if (!a.exists()) {
-			a.mkdirs();
-		}
+    public Help getHelp() {
+        return this.command_help;
+    }
 
-		StringWriter errors = new StringWriter();
-		e.printStackTrace(new PrintWriter(errors));
+    public PlayerUtils getPlayerUtils() {
+        return this.playerutil;
+    }
 
-		try {
-			File f = new File("plugins/HandGiveAll/errors/"+getTimestamp()+".txt");
-			if (f.exists()) f.delete();
+    public ItemUtils getItemUtils() {
+        return this.itemutil;
+    }
 
-			BufferedWriter out = new BufferedWriter(new FileWriter(f));
-			out.write("아래 오류를 개발자에게 전송해주시면 큰 도움이 됩니다.\n\n"+errors.toString());
-			out.close();
+    public FireworkUtils getFireworkUtils() {
+        return this.fireworkutil;
+    }
 
-			PlayerUtils.sendMsg(prefix+"§c예상치 못한 오류가 §eHandGiveAll/errors/ §c폴더에 저장되었습니다.");
-			PlayerUtils.sendMsg(prefix+"§c개발자에게 해당 오류를 전송해주시면 큰 도움이 됩니다.");
-		} catch (Exception e2) {
-			PlayerUtils.sendMsg(prefix+"§c플러그인 오류 로그를 저장하는데 문제가 발생했습니다.");
-		}
-	}
+    public ReflectionUtils getReflectionUtils() {
+        return this.reflectionutils;
+    }
 
-	public String getTimestamp() {
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy년MM월dd일_HH시mm분ss초");
-		return sdf.format(cal.getTime());
-	}
+    public void error_notice(Exception e) {
+        File a = new File("plugins/HandGiveAll/errors");
+        if (!a.exists()) {
+            a.mkdirs();
+        }
 
-	public String checkSumApacheCommons(String plugin) {
-		File jar = null;
-		try {
-			jar = new File(Bukkit.getPluginManager().getPlugin(plugin)
-					.getClass().getProtectionDomain().getCodeSource()
-					.getLocation().toURI());
-		} catch (URISyntaxException e) {
-			return null;
-		}
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
 
-		FileInputStream fis = null;
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			fis = new FileInputStream(jar);
-			byte[] dataBytes = new byte[1024];
+        try {
+            File f = new File("plugins/HandGiveAll/errors/" + getTimestamp() + ".txt");
+            if (f.exists()) f.delete();
 
-			int nread = 0;
+            BufferedWriter out = new BufferedWriter(new FileWriter(f));
+            out.write(LanguageUtils.getString("error.file.header") + "\n\n" + errors.toString());
+            out.close();
 
-			while ((nread = fis.read(dataBytes)) != -1) {
-				md.update(dataBytes, 0, nread);
-			}
+            PlayerUtils.sendMsg(prefix + LanguageUtils.getString("error.notice.1"));
+            PlayerUtils.sendMsg(prefix + LanguageUtils.getString("error.notice.2"));
+        } catch (Exception e2) {
+            PlayerUtils.sendMsg(prefix + LanguageUtils.getString("error.error"));
+        }
+    }
 
-			byte[] mdbytes = md.digest();
+    private String getTimestamp() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(LanguageUtils.getString("error.date.format"));
+        return sdf.format(cal.getTime());
+    }
 
-			// convert the byte to hex format
-			StringBuffer sb = new StringBuffer("");
-			for (int i = 0; i < mdbytes.length; i++) {
-				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16)
-						.substring(1));
-			}
-			fis.close();
-			return sb.toString().toUpperCase();
-		} catch (Exception e) { try { fis.close(); } catch (Exception e2) { }}
-		return null;
-	}
+    public String checkSumApacheCommons(String plugin) {
+        File jar = null;
+        try {
+            jar = new File(Bukkit.getPluginManager().getPlugin(plugin)
+                    .getClass().getProtectionDomain().getCodeSource()
+                    .getLocation().toURI());
+        } catch (URISyntaxException e) {
+            return null;
+        }
 
-	private String replaceColors(String str) {
-		for (int i = 0; i < 10; ++i) {
-			str = str.replaceAll("§" + i, "&" + i);
-		}
-		final char[] c = { 'a', 'b', 'c', 'd', 'e', 'f', 'l', 'm', 'n', 'o', 'r' };
-		for (int j = 0; j < c.length; ++j) {
-			str = str.replaceAll("§" + c[j], "&" + c[j]);
-		}
-		return str;
-	}
+        FileInputStream fis = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            fis = new FileInputStream(jar);
+            byte[] dataBytes = new byte[1024];
 
-	public boolean onCommand(CommandSender s, Command c, String l, String[] a) {
-		if (l.equalsIgnoreCase("hn")) {
-			if (pluginInfo.getNotices().size() > 0) {
-				s.sendMessage(prefix + "§e=====§b§l[ §aHandGiveAll 공지 §b§l]§e=====");
-				for (String notice : pluginInfo.getNotices())
-					s.sendMessage(prefix + notice);
-				s.sendMessage(prefix + "§e===========================");
-			} else s.sendMessage(prefix + "§f공지 사항이 없습니다.");
-		}
-		return false;
-	}
+            int nread = 0;
+
+            while ((nread = fis.read(dataBytes)) != -1) {
+                md.update(dataBytes, 0, nread);
+            }
+
+            byte[] mdbytes = md.digest();
+
+            // convert the byte to hex format
+            StringBuffer sb = new StringBuffer("");
+            for (int i = 0; i < mdbytes.length; i++) {
+                sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16)
+                        .substring(1));
+            }
+            fis.close();
+            return sb.toString().toUpperCase();
+        } catch (Exception e) {
+            try {
+                fis.close();
+            } catch (Exception e2) {
+            }
+        }
+        return null;
+    }
+
+    private String replaceColors(String str) {
+        for (int i = 0; i < 10; ++i) {
+            str = str.replaceAll("§" + i, "&" + i);
+        }
+        final char[] c = {'a', 'b', 'c', 'd', 'e', 'f', 'l', 'm', 'n', 'o', 'r'};
+        for (int j = 0; j < c.length; ++j) {
+            str = str.replaceAll("§" + c[j], "&" + c[j]);
+        }
+        return str;
+    }
+
+    public boolean onCommand(CommandSender s, Command c, String l, String[] a) {
+        if (l.equalsIgnoreCase("hn")) {
+            if (pluginInfo.getNotices().size() > 0) {
+                s.sendMessage(prefix + LanguageUtils.getString("command.hn.notices.header"));
+                for (String notice : pluginInfo.getNotices())
+                    s.sendMessage(prefix + notice);
+                s.sendMessage(prefix + LanguageUtils.getString("command.hn.notices.footer"));
+            } else s.sendMessage(prefix + LanguageUtils.getString("command.hn.notices.empty"));
+        }
+        return false;
+    }
 
 	/*
 	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
@@ -291,4 +348,29 @@ public class HandGiveAll extends JavaPlugin {
 		}
 	}
 	*/
+
+    private void registerLibrary(String name) {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
+        }
+        File file = new File(getDataFolder(), name);
+        try {
+            InputStream in = getClass().getResourceAsStream("/lib/" + name);
+            FileOutputStream out = new FileOutputStream(file);
+
+            byte[] data = new byte[1024];
+            int size;
+            while ((size = in.read(data)) != -1) {
+                out.write(data, 0, size);
+            }
+            out.flush();
+            URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+
+            Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+            method.setAccessible(true);
+            method.invoke(sysloader, file.toURI().toURL());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

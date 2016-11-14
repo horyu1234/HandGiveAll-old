@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,216 +11,124 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
- * 소스에 대한 피드백등은 언제나 환영합니다! 아래는 개발자 연락처입니다.
- *
- * Skype: horyu1234
- * KakaoTalk: horyu1234
- * Telegram: @horyu1234
+ * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
  ******************************************************************************/
 
 package com.horyu1234.handgiveall.web;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.horyu1234.handgiveall.HandGiveAll;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.net.URLConnection;
 
 public class Blacklist {
-	private static HashMap<String, BlackData> map;
+    private static HandGiveAll plugin;
 
-	public static void init() {
-		final SimpleDateFormat format = new SimpleDateFormat("yyyy년MM월dd일_HH시mm분ss초");
-		map = new HashMap<String, BlackData>();
+    public static void init(HandGiveAll pl) {
+        plugin = pl;
+        checkWithServer();
+    }
 
-		new Thread(new Runnable() {
-			public void run() {
-				for (String type : new String[] {
-						"http://list.nickname.mc-blacklist.kr/",
-						"http://list.uuid.mc-blacklist.kr/",
-						"http://list.ip.mc-blacklist.kr/" }) {
-					try {
-						URL url = new URL(type);
-						HttpURLConnection urlConn = (HttpURLConnection) url
-								.openConnection();
-						urlConn.setDoOutput(true);
+    public static void checkWithServer() {
+        try {
+            JsonObject json = getJSON("http://api.mc-blacklist.kr/API/ip/me");
+            if (json.get("blacklist").getAsBoolean()) {
+                for (int i = 0; i < 10; i++) {
+                    Bukkit.getConsoleSender().sendMessage("");
+                }
+                Bukkit.getConsoleSender().sendMessage("§c#============================#");
+                Bukkit.getConsoleSender().sendMessage("귀하의 서버는 블랙리스트에 등록되어");
+                Bukkit.getConsoleSender().sendMessage("플러그인에 의해 구동이 제한됩니다.");
+                Bukkit.getConsoleSender().sendMessage("");
+                Bukkit.getConsoleSender().sendMessage("  \"" + json.get("reason").getAsString() + "\"");
+                Bukkit.getConsoleSender().sendMessage("§c#============================#");
 
-						BufferedReader br = new BufferedReader(new InputStreamReader(
-								urlConn.getInputStream(), "UTF-8"));
-						br.readLine();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep(10000);
+                            Bukkit.shutdown();
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                });
+            }
+        } catch (Exception e) {
+        }
+    }
 
-						String line;
-						while ((line = br.readLine()) != null) {
-							for (String value : line.split("</br>")) {
-								if (value.equals(" ")
-										|| value.startsWith("ban_date | "))
-									continue;
+    public static void checkWithPlayer(final PlayerJoinEvent event) {
+        new Thread(new Runnable() {
+            public void run() {
+                Player player = event.getPlayer();
 
-								String[] data = value.split(" \\| ");
-								String date = data[0];
-								String ban = data[1];
-								String reason = data[2].replaceAll("_", " ");
-								String punisher = data[3];
+                if (Material.getMaterial("DOUBLE_PLANT") != null) {
+                    if (checkWithType(player, player.getUniqueId().toString())) {
+                        event.setJoinMessage(null);
+                        return;
+                    }
+                }
 
-								map.put(ban, new BlackData(format.parse(date), reason,
-										punisher));
-							}
-						}
+                if (!checkWithType(player, player.getName())) {
+                    if (checkWithType(player, player.getAddress().getHostName())) {
+                        event.setJoinMessage(null);
+                    }
+                } else {
+                    event.setJoinMessage(null);
+                }
+            }
+        }).start();
+    }
 
-					} catch (Exception e) { }
-				}
+    private static boolean checkWithType(final Player player, String check) {
+        try {
+            final JsonObject json = getJSON("http://api.mc-blacklist.kr/API/check/" + check);
+            if (json.get("blacklist").getAsBoolean()) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        player.kickPlayer(ChatColor.AQUA + "[MC-BlackList]\n" + ChatColor.RESET + json.get("reason").getAsString() + "\n" + ChatColor.GRAY + "문의 : http://mc-blacklist.kr/inquire");
+                    }
+                });
+                URLConnection url1 = new URL("http://api.mc-blacklist.kr/API/blocklog/" + player.getName() + "/" + player.getUniqueId() + "/" + player.getAddress().getHostName()).openConnection();
+                url1.setRequestProperty("User-Agent", "MC-Blacklist-System");
+                InputStream in1 = url1.getInputStream();
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
 
-				try {
-					URL url = new URL("http://ip.mc-blacklist.kr/");
-					HttpURLConnection urlConn = (HttpURLConnection) url
-							.openConnection();
-					urlConn.setDoOutput(true);
+    private static JsonObject getJSON(String urlStr) {
+        try {
+            URLConnection url = new URL(urlStr).openConnection();
+            url.setRequestProperty("User-Agent", "MC-Blacklist-System");
 
-					BufferedReader br = new BufferedReader(new InputStreamReader(
-							urlConn.getInputStream(), "UTF-8"));
-					String ip = br.readLine().substring(1);
+            StringBuilder sb = new StringBuilder();
+            InputStream in = url.getInputStream();
 
-					if (map.containsKey(ip)) {
-						Bukkit.getConsoleSender().sendMessage(
-								"§c#============================#");
-						Bukkit.getConsoleSender().sendMessage("귀하의 서버는 블랙리스트에 등록되어");
-						Bukkit.getConsoleSender().sendMessage("플러그인에 의해 구동이 제한됩니다.");
-						Bukkit.getConsoleSender().sendMessage("");
-						Bukkit.getConsoleSender().sendMessage("§4사유: ");
-						Bukkit.getConsoleSender().sendMessage(
-								"  \"" + map.get(ip).getReason() + "\"");
-						Bukkit.getConsoleSender().sendMessage(
-								"§c#============================#");
+            byte[] data = new byte[1024];
+            int size;
+            while ((size = in.read(data)) != -1) {
+                sb.append(new String(data, 0, size));
+            }
 
-						Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("HandGiveAll"), new Runnable() {
-							public void run() {
-								try {
-									Thread.sleep(10000);
-								} catch (InterruptedException e) { }
-							}
-						});
-						Bukkit.shutdown();
-						return;
-					}
-				} catch (IOException e) { }
-			}
-		}).start();
-	}
-
-	public static boolean contains(OfflinePlayer player) {
-		if (Material.getMaterial("DOUBLE_PLANT") != null
-				&& map.containsKey(player.getUniqueId().toString()))
-			return true;
-		if (map.containsKey(player.getName()))
-			return true;
-
-		if (player.isOnline()) {
-			Player p = player.getPlayer();
-
-			if (map.containsKey(p.getAddress().getAddress().getHostAddress())) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public static BlackData getBlackData(OfflinePlayer player) {
-		if (Material.getMaterial("DOUBLE_PLANT") != null
-				&& map.containsKey(player.getUniqueId().toString()))
-			return map.get(player.getUniqueId().toString());
-		if (map.containsKey(player.getName()))
-			return map.get(player.getName());
-
-		if (player.isOnline()) {
-			String ip = player.getPlayer().getAddress().getAddress()
-					.getHostAddress();
-
-			if (map.containsKey(ip)) {
-				return map.get(ip);
-			}
-		}
-
-		return null;
-	}
-
-	public static void kick(Player player) {
-		if (Material.getMaterial("DOUBLE_PLANT") != null)
-			log(player.getName(), player.getUniqueId().toString(), player.getAddress().getHostName(), getBlackData(player).getReason(), getBlackData(player).getPunisher());
-		else log(player.getName(), null, player.getAddress().getHostName(), getBlackData(player).getReason(), getBlackData(player).getPunisher());
-		player.kickPlayer("§7§l[Blacklist]§r\n§8블랙 리스트에 등록된 사용자입니다!§r\n\n§c§l\"§4"
-				+ getBlackData(player).getReason() + "§c§l\"§r");
-	}
-
-	public static class BlackData {
-		private final Date date;
-		private final String reason;
-		private final String punisher;
-
-		public BlackData(Date date, String reason, String punisher) {
-			this.date = date;
-			this.reason = reason;
-			this.punisher = punisher;
-		}
-
-		public Date getDate() {
-			return this.date;
-		}
-
-		public String getReason() {
-			return this.reason;
-		}
-
-		public String getPunisher() {
-			return this.punisher;
-		}
-	}
-
-	public static void log(final String nickname, final String uuid, final String ip, final String reason, final String by) {
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					URL url = new URL("http://horyu.cafe24.com/Minecraft/Plugin/Blacklist/log.php");
-					Map<String, Object> params = new LinkedHashMap<String, Object>();
-					params.put("nickname", nickname);
-					params.put("ip", ip);
-					params.put("reason", reason);
-					params.put("uuid", uuid != null ? uuid : "none");
-					params.put("by", by);
-
-					StringBuilder postData = new StringBuilder();
-					for (Map.Entry<String, Object> param : params.entrySet()) {
-						if (postData.length() != 0)
-							postData.append('&');
-						postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
-						postData.append('=');
-						postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
-					}
-					byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					conn.setRequestMethod("POST");
-					conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-					conn.setRequestProperty("Content-Length",String.valueOf(postDataBytes.length));
-					conn.setDoOutput(true);
-					conn.getOutputStream().write(postDataBytes);
-					new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-				} catch (Exception e) { }
-			}
-		}).start();
-	}
+            JsonObject json = new JsonParser().parse(sb.toString()).getAsJsonObject();
+            return json;
+        } catch (Exception e) {
+        }
+        return null;
+    }
 }

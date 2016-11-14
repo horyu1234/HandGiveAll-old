@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,14 +11,10 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems All rights reserved.
+ * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
- * 소스에 대한 피드백등은 언제나 환영합니다! 아래는 개발자 연락처입니다.
- *
- * Skype: horyu1234
- * KakaoTalk: horyu1234
- * Telegram: @horyu1234
+ * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
  ******************************************************************************/
 
 package com.horyu1234.handgiveall.utils;
@@ -26,19 +22,19 @@ package com.horyu1234.handgiveall.utils;
 import com.horyu1234.handgiveall.HandGiveAll;
 
 public class ReflectionUtils {
-	@SuppressWarnings("unused")
-	private HandGiveAll plugin;
-	public ReflectionUtils(HandGiveAll pl) {
-		this.plugin = pl;
-	}
+    private HandGiveAll plugin;
 
-	public String getPackageName() {
-		for (Package pack : Package.getPackages()) {
-			if (pack.getName().startsWith("org.bukkit.craftbukkit.v")) {
-				String[] namesplit = pack.getName().split("\\.");
-				return namesplit[3];
-			}
-		}
-		return null;
-	}
+    public ReflectionUtils(HandGiveAll pl) {
+        this.plugin = pl;
+    }
+
+    public String getPackageName() {
+        for (Package pack : Package.getPackages()) {
+            if (pack.getName().startsWith("org.bukkit.craftbukkit.v")) {
+                String[] namesplit = pack.getName().split("\\.");
+                return namesplit[3];
+            }
+        }
+        return null;
+    }
 }
