@@ -48,11 +48,6 @@ public class LanguageUtils {
         language.put("enable.done.2", "§a플러그인제작자: horyu1234");
         language.put("enable.done.3", "§aCopyright 2014 ~ @currentYear@ Horyu Systems Ltd, All Rights Reserved.");
 
-        /* 플러그인 비활성화 */
-        language.put("disable.done.1", "§a플러그인이 비활성화 되었습니다.");
-        language.put("disable.done.2", "§a플러그인제작자: horyu1234");
-        language.put("disable.done.3", "§aCopyright 2014 ~ @currentYear@ Horyu Systems Ltd, All Rights Reserved.");
-
         /* 전체 예외 처리 */
         language.put("error.date.format", "yyyy-MM-dd HH.mm.ss");
         language.put("error.file.header", "아래 오류를 개발자에게 전송해주시면 큰 도움이 됩니다.");
@@ -103,8 +98,6 @@ public class LanguageUtils {
         language.put("check.disable.message_box", "본 플러그인의 제작자가 플러그인의 구동을 비활성화하여\n플러그인의 구동이 제한됩니다.");
 
         /* 데이터 확인 */
-        language.put("check.data.create.config", "§c설정 파일을 찾을 수 없습니다. 새로 생성을 시작합니다...");
-        language.put("check.data.create_done.config", "§a완료");
         language.put("check.data.loaded_config", "§a콘피그를 불러왔습니다.");
         language.put("check.data.error.load_config.1", "§c콘피그를 불러오는 중 오류가 발생했습니다.");
         language.put("check.data.error.load_config.2", "§c메시지: ");
@@ -338,11 +331,6 @@ public class LanguageUtils {
         language.put("enable.done.2", "§aDeveloper: horyu1234");
         language.put("enable.done.3", "§aCopyright 2014 ~ @currentYear@ Horyu Systems Ltd, All Rights Reserved.");
 
-        /* 플러그인 비활성화 */
-        language.put("disable.done.1", "§aPlugin has been disabled.");
-        language.put("disable.done.2", "§aDeveloper: horyu1234");
-        language.put("disable.done.3", "§aCopyright 2014 ~ @currentYear@ Horyu Systems Ltd, All Rights Reserved.");
-
         /* 전체 예외 처리 */
         language.put("error.date.format", "yyyy-MM-dd HH.mm.ss");
         language.put("error.file.header", "Please send the error below.");
@@ -393,8 +381,6 @@ public class LanguageUtils {
         language.put("check.disable.message_box", "The developer of this plugin has disabled\nthe plugin.");
 
         /* 데이터 확인 */
-        language.put("check.data.create.config", "§cCouldn't find a config file. Creating one...");
-        language.put("check.data.create_done.config", "§aDone");
         language.put("check.data.loaded_config", "§aSuccessfully loaded config.");
         language.put("check.data.error.load_config.1", "§cAn error occured while loading config.");
         language.put("check.data.error.load_config.2", "§cMessage: ");

@@ -76,9 +76,9 @@ public class HandGiveAll extends JavaPlugin {
 
 
     public void onDisable() {
-        sendConsole(LanguageUtils.getString("disable.done.1"));
-        sendConsole(LanguageUtils.getString("disable.done.2"));
-        sendConsole(LanguageUtils.getString("disable.done.3").replace("@currentYear@", Calendar.getInstance().get(Calendar.YEAR) + ""));
+        sendConsole("§aPlugin has been disabled.");
+        sendConsole("§aDeveloper: horyu1234");
+        sendConsole("§aCopyright 2014 ~ " + Calendar.getInstance().get(Calendar.YEAR) + " Horyu Systems Ltd, All Rights Reserved.");
     }
 
     public void onEnable() {
@@ -89,9 +89,9 @@ public class HandGiveAll extends JavaPlugin {
         bcprefix = "§b§l[§f§lHGA v" + plugin_version + "§b§l] §r";
 
         if (!new File(getDataFolder(), "config.yml").exists()) {
-            sendConsole(LanguageUtils.getString("check.data.create.config"));
+            sendConsole("§cCouldn't find a config file. Creating one...");
             saveResource("config.yml", false);
-            sendConsole(LanguageUtils.getString("check.data.create_done.config"));
+            sendConsole("§aDone");
         }
 
         HGAYamlConfiguration config = new HGAYamlConfiguration();
@@ -105,7 +105,14 @@ public class HandGiveAll extends JavaPlugin {
 
             config.loadFromString(datas);
         } catch (Exception e) {
+            sendConsole("§c[English]");
             sendConsole("§cAn error occurred while loading config.yml");
+            sendConsole("§cPlease assure that config.yml is encoded with UTF-8");
+            sendConsole("§cDon't edit config.yml using Windows Notepad! This could cause conflicts with UTF-8 encoding.");
+            sendConsole("§c[Korean]");
+            sendConsole("§cconfig.yml 을 로딩하는 동안 오류가 발생했습니다.");
+            sendConsole("§cconfig.yml 파일의 인코딩이 UTF-8 인지 확인해주세요");
+            sendConsole("§cconfig.yml 파일을 윈도우 기본 메모장으로 수정하지 마세요! 이것은 인코딩이 깨지는 현상의 원인이 될 수 있습니다.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
