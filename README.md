@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/horyu1234/HandGiveAll-old.svg?branch=master)](https://travis-ci.org/horyu1234/HandGiveAll-old)
+
 #HandGiveAll#
 
 #####Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.#####
