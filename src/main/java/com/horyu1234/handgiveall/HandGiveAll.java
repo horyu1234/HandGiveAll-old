@@ -57,11 +57,6 @@ public class HandGiveAll extends JavaPlugin {
     private ReflectionUtils reflectionutils;
     //=================
     private Help command_help;
-    private HandGiveAll_c command_HandGiveAll_c;
-    private HandCheckAll_c command_HandCheckAll_c;
-    private DataGiveAll_c command_DataGiveAll_c;
-    private MoneyGiveAll_c command_MoneyGiveAll_c;
-    private PotionGiveAll_c command_PotionGiveAll_c;
     //=================
     public boolean use_korean = false;
     public boolean config_show_console_msg = false;
@@ -206,21 +201,28 @@ public class HandGiveAll extends JavaPlugin {
     }
 
     private void initCommands() {
-        command_HandGiveAll_c = new HandGiveAll_c(this);
-        command_HandCheckAll_c = new HandCheckAll_c(this);
-        command_DataGiveAll_c = new DataGiveAll_c(this);
-        command_MoneyGiveAll_c = new MoneyGiveAll_c(this);
-        command_PotionGiveAll_c = new PotionGiveAll_c(this);
+        com.horyu1234.handgiveall.commands.HandGiveAll handGiveAll = new com.horyu1234.handgiveall.commands.HandGiveAll(this);
+        HandCheckAll handCheckAll = new HandCheckAll(this);
+        DataGiveAll dataGiveAll = new DataGiveAll(this);
+        MoneyGiveAll moneyGiveAll = new MoneyGiveAll(this);
+        PotionGiveAll potionGiveAll = new PotionGiveAll(this);
         command_help = new Help(this);
+
         getCommand("hh").setExecutor(command_help);
-        getCommand("hga").setExecutor(command_HandGiveAll_c);
-        getCommand("hgar").setExecutor(command_HandGiveAll_c);
-        getCommand("hgac").setExecutor(command_HandGiveAll_c);
-        getCommand("hgacr").setExecutor(command_HandGiveAll_c);
-        getCommand("hca").setExecutor(command_HandCheckAll_c);
-        getCommand("dga").setExecutor(command_DataGiveAll_c);
-        getCommand("mga").setExecutor(command_MoneyGiveAll_c);
-        getCommand("pga").setExecutor(command_PotionGiveAll_c);
+
+        getCommand("hga").setExecutor(handGiveAll);
+        getCommand("hgar").setExecutor(handGiveAll);
+        getCommand("hgac").setExecutor(handGiveAll);
+        getCommand("hgacr").setExecutor(handGiveAll);
+
+        getCommand("hca").setExecutor(handCheckAll);
+
+        getCommand("dga").setExecutor(dataGiveAll);
+
+        getCommand("mga").setExecutor(moneyGiveAll);
+
+        getCommand("pga").setExecutor(potionGiveAll);
+
         Stats stats = new Stats(this);
         stats.sendStatsData();
     }

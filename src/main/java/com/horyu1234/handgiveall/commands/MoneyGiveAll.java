@@ -30,11 +30,11 @@ import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 
-public class MoneyGiveAll_c implements CommandExecutor {
+public class MoneyGiveAll implements CommandExecutor {
     public HandGiveAll plugin;
     private DecimalFormat fmt;
 
-    public MoneyGiveAll_c(HandGiveAll pl) {
+    public MoneyGiveAll(HandGiveAll pl) {
         this.plugin = pl;
         int pointAmount = plugin.config_max_point_count;
         String regex = "#,###.#";

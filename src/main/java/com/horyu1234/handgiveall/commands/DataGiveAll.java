@@ -20,9 +20,9 @@
 package com.horyu1234.handgiveall.commands;
 
 import com.horyu1234.handgiveall.HandGiveAll;
+import com.horyu1234.handgiveall.Values;
 import com.horyu1234.handgiveall.utils.LanguageUtils;
 import com.horyu1234.handgiveall.utils.PlayerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -35,18 +35,16 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class DataGiveAll_c implements CommandExecutor {
+public class DataGiveAll implements CommandExecutor {
     public HandGiveAll plugin;
-    private DecimalFormat fmt = new DecimalFormat("#,###");
     private String itemsDir = "plugins/HandGiveAll/items/";
-    private List<String> itemslist = new ArrayList<String>();
+    private List<String> itemList = new ArrayList<String>();
 
-    public DataGiveAll_c(HandGiveAll pl) {
+    public DataGiveAll(HandGiveAll pl) {
         this.plugin = pl;
     }
 
@@ -156,7 +154,7 @@ public class DataGiveAll_c implements CommandExecutor {
                         PlayerUtils.sendMsg("");
                         PlayerUtils.sendMsg("");
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.giveall.header"));
-                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.giveall.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()).replace("@item@", plugin.getItemUtils().getItemName(item)).replace("@amount@", fmt.format(amount)));
+                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.giveall.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()).replace("@item@", plugin.getItemUtils().getItemName(item)).replace("@amount@", Values.FORMAT_THOUSANDS.format(amount)));
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.giveall.2"));
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.giveall.footer"));
                         PlayerUtils.sendMsg("");
@@ -228,8 +226,8 @@ public class DataGiveAll_c implements CommandExecutor {
                         PlayerUtils.sendMsg("");
                         PlayerUtils.sendMsg("");
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.rgiveall.header"));
-                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.rgiveall.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()).replace("@item@", plugin.getItemUtils().getItemName(item)).replace("@amount@", fmt.format(random)));
-                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.rgiveall.2").replace("@min@", fmt.format(min)).replace("@max@", fmt.format(max)));
+                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.rgiveall.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player) ? ((Player) s).getDisplayName() : s.getName() : s.getName()).replace("@item@", plugin.getItemUtils().getItemName(item)).replace("@amount@", Values.FORMAT_THOUSANDS.format(random)));
+                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.rgiveall.2").replace("@min@", Values.FORMAT_THOUSANDS.format(min)).replace("@max@", Values.FORMAT_THOUSANDS.format(max)));
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.rgiveall.3"));
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.dga.rgiveall.footer"));
                         PlayerUtils.sendMsg("");
@@ -289,7 +287,7 @@ public class DataGiveAll_c implements CommandExecutor {
                         String[] page = {"", ""};
                         page[0] = LanguageUtils.getString("command.dga.list.book.top");
                         int i = 2, ii = 0;
-                        for (String s2 : itemslist) {
+                        for (String s2 : itemList) {
                             if (page[ii].equals("")) {
                                 page[ii] += LanguageUtils.getString("command.dga.list.book.page1.1");
                                 page[ii] += LanguageUtils.getString("command.dga.list.book.page1.2");
@@ -317,18 +315,18 @@ public class DataGiveAll_c implements CommandExecutor {
     }
 
     private void reloadItemList() {
-        itemslist.clear();
+        itemList.clear();
 
         File folder = new File(itemsDir);
         for (File items : folder.listFiles()) {
-            itemslist.add(items.getName());
+            itemList.add(items.getName());
         }
     }
 
     private boolean contain(String in) {
         reloadItemList();
 
-        for (String s : itemslist)
+        for (String s : itemList)
             if (s.replace(".yml", "").equals(in))
                 return true;
         return false;

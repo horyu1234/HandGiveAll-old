@@ -19,7 +19,7 @@
 
 package com.horyu1234.handgiveall.commands;
 
-import com.horyu1234.handgiveall.HandGiveAll;
+import com.horyu1234.handgiveall.Values;
 import com.horyu1234.handgiveall.utils.LanguageUtils;
 import com.horyu1234.handgiveall.utils.PlayerUtils;
 import org.bukkit.Material;
@@ -29,13 +29,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.text.DecimalFormat;
+public class HandGiveAll implements CommandExecutor {
+    public com.horyu1234.handgiveall.HandGiveAll plugin;
 
-public class HandGiveAll_c implements CommandExecutor {
-    public HandGiveAll plugin;
-    private DecimalFormat fmt = new DecimalFormat("#,###");
-
-    public HandGiveAll_c(HandGiveAll pl) {
+    public HandGiveAll(com.horyu1234.handgiveall.HandGiveAll pl) {
         this.plugin = pl;
     }
 
@@ -76,7 +73,7 @@ public class HandGiveAll_c implements CommandExecutor {
                                 PlayerUtils.sendMsg("");
                                 PlayerUtils.sendMsg("");
                                 PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hga.give.header"));
-                                PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hga.give.1").replace("@player@", plugin.config_use_nickname ? p.getDisplayName() : p.getName()).replace("@item@", plugin.getItemUtils().getItemName(p.getItemInHand().clone())).replace("@amount@", fmt.format(amount)));
+                                PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hga.give.1").replace("@player@", plugin.config_use_nickname ? p.getDisplayName() : p.getName()).replace("@item@", plugin.getItemUtils().getItemName(p.getItemInHand().clone())).replace("@amount@", Values.FORMAT_THOUSANDS.format(amount)));
                                 PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hga.give.2"));
                                 PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hga.give.footer"));
                                 PlayerUtils.sendMsg("");
@@ -115,8 +112,8 @@ public class HandGiveAll_c implements CommandExecutor {
                                 PlayerUtils.sendMsg("");
                                 PlayerUtils.sendMsg("");
                                 PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgar.give.header"));
-                                PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgar.give.1").replace("@player@", plugin.config_use_nickname ? p.getDisplayName() : p.getName()).replace("@item@", plugin.getItemUtils().getItemName(hand)).replace("@amount@", fmt.format(random)));
-                                PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgar.give.2").replace("@min@", fmt.format(min)).replace("@max@", fmt.format(max)));
+                                PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgar.give.1").replace("@player@", plugin.config_use_nickname ? p.getDisplayName() : p.getName()).replace("@item@", plugin.getItemUtils().getItemName(hand)).replace("@amount@", Values.FORMAT_THOUSANDS.format(random)));
+                                PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgar.give.2").replace("@min@", Values.FORMAT_THOUSANDS.format(min)).replace("@max@", Values.FORMAT_THOUSANDS.format(max)));
                                 PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgar.give.3"));
                                 PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgar.give.footer"));
                                 PlayerUtils.sendMsg("");
@@ -157,7 +154,7 @@ public class HandGiveAll_c implements CommandExecutor {
                     PlayerUtils.sendMsg("");
                     PlayerUtils.sendMsg("");
                     PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgac.give.header"));
-                    PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgac.give.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName()).replace("@item@", item.getType().name()).replace("@amount@", fmt.format(amount)));
+                    PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgac.give.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName()).replace("@item@", item.getType().name()).replace("@amount@", Values.FORMAT_THOUSANDS.format(amount)));
                     PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgac.give.2"));
                     PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgac.give.footer"));
                     PlayerUtils.sendMsg("");
@@ -198,8 +195,8 @@ public class HandGiveAll_c implements CommandExecutor {
                         PlayerUtils.sendMsg("");
                         PlayerUtils.sendMsg("");
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgacr.give.header"));
-                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgacr.give.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName()).replace("@item@", item.getType().name()).replace("@amount@", fmt.format(random)));
-                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgacr.give.2").replace("@min@", fmt.format(min)).replace("@max@", fmt.format(max)));
+                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgacr.give.1").replace("@player@", plugin.config_use_nickname ? (s instanceof Player ? ((Player) s).getDisplayName() : s.getName()) : s.getName()).replace("@item@", item.getType().name()).replace("@amount@", Values.FORMAT_THOUSANDS.format(random)));
+                        PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgacr.give.2").replace("@min@", Values.FORMAT_THOUSANDS.format(min)).replace("@max@", Values.FORMAT_THOUSANDS.format(max)));
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgacr.give.3"));
                         PlayerUtils.sendMsg(plugin.bcprefix + LanguageUtils.getString("command.hgacr.give.footer"));
                         PlayerUtils.sendMsg("");

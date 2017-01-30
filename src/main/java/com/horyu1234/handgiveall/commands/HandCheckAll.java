@@ -35,10 +35,10 @@ import org.bukkit.inventory.meta.PotionMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HandCheckAll_c implements CommandExecutor {
+public class HandCheckAll implements CommandExecutor {
     public HandGiveAll plugin;
 
-    public HandCheckAll_c(HandGiveAll pl) {
+    public HandCheckAll(HandGiveAll pl) {
         this.plugin = pl;
     }
 

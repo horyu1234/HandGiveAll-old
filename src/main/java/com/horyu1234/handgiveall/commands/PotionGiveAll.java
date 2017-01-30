@@ -36,11 +36,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PotionGiveAll_c implements CommandExecutor {
+public class PotionGiveAll implements CommandExecutor {
     public HandGiveAll plugin;
     //private HashMap<Integer, PotionEffect> potioneffectlist;
 
-    public PotionGiveAll_c(HandGiveAll pl) {
+    public PotionGiveAll(HandGiveAll pl) {
         this.plugin = pl;
     }
 
