@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,7 +11,7 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * 라이센스: Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
  * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
@@ -59,13 +59,6 @@ public class PlayerUtils {
         return new Player[]{};
     }
 
-    public Player getPlayer(String name) {
-        for (Player all : getOnlinePlayers())
-            if (all.getName().equalsIgnoreCase(name))
-                return all;
-        return null;
-    }
-
     public static void sendMsg(String msg) {
         Bukkit.getConsoleSender().sendMessage(msg);
         for (Player all : getOnlinePlayers()) {
@@ -82,5 +75,12 @@ public class PlayerUtils {
             else s += ", " + String.format("(%s_%s)", p.getName(), uuid);
         }
         return s;
+    }
+
+    public Player getPlayer(String name) {
+        for (Player all : getOnlinePlayers())
+            if (all.getName().equalsIgnoreCase(name))
+                return all;
+        return null;
     }
 }

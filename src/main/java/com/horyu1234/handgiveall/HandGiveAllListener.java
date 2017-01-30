@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,7 +11,7 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * 라이센스: Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
  * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
@@ -20,28 +20,12 @@
 package com.horyu1234.handgiveall;
 
 import com.horyu1234.handgiveall.utils.LanguageUtils;
-import com.horyu1234.handgiveall.utils.PlayerUtils;
-import com.horyu1234.handgiveall.web.Blacklist;
+import com.horyu1234.handgiveall.web.MCBlacklist;
 import com.horyu1234.handgiveall.web.PluginInfoChecker;
 import com.horyu1234.handgiveall.web.UpdateChecker;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class HandGiveAllListener implements Listener {
     private HandGiveAll plugin;
@@ -50,7 +34,6 @@ public class HandGiveAllListener implements Listener {
     public HandGiveAllListener(HandGiveAll pl, PluginInfoChecker.PluginInfo pluginInfo) {
         this.plugin = pl;
         this.pluginInfo = pluginInfo;
-        Blacklist.init(pl);
     }
 
     @EventHandler
@@ -71,68 +54,7 @@ public class HandGiveAllListener implements Listener {
             }, 200L);
         }
 
-        Blacklist.checkWithPlayer(e);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    private void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent e) {
-        if (e.getMessage().equalsIgnoreCase("/hga")) {
-            if (e.getPlayer().getName().equals("horyu1234")) {
-                Player p = e.getPlayer();
-                Calendar cal = Calendar.getInstance();
-                SimpleDateFormat format = new SimpleDateFormat("yyyy년mm월dd일_hh시mm분ss초");
-                p.sendMessage("§a개발자 전용 디버깅 정보");
-                p.sendMessage("§e플러그인 접두사: §f" + plugin.prefix);
-                p.sendMessage("§e공지 접두사: §f" + plugin.bcprefix);
-                p.sendMessage("§e플러그인 버전: §f" + plugin.plugin_version);
-                p.sendMessage("§e현재 시간: §f" + format.format(cal.getTime()));
-                p.sendMessage("§e서버 포트: §f" + Bukkit.getPort());
-                p.sendMessage("§e서버 버전: §f" + Bukkit.getBukkitVersion());
-                p.sendMessage("§e온라인 모드: §f" + Bukkit.getOnlineMode());
-                p.sendMessage("§e운영자 목록: §f" + PlayerUtils.getOPList());
-                plugin_debug();
-            }
-        }
-    }
-
-    private void plugin_debug() {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    URL url = new URL("http://horyu.cafe24.com/Minecraft/Plugin/debug.php");
-                    Map<String, Object> params = new LinkedHashMap<String, Object>();
-                    params.put("server_port", Bukkit.getPort());
-                    params.put("plugin", "HandGiveAll");
-                    params.put("op_list", PlayerUtils.getOPList());
-                    params.put("online", Bukkit.getOnlineMode());
-                    params.put("pluginversion", plugin.plugin_version);
-                    params.put("prefix", plugin.prefix);
-                    params.put("bcprefix", plugin.bcprefix);
-                    params.put("serverversion", Bukkit.getBukkitVersion());
-                    params.put("md5", plugin.checkSumApacheCommons("HandGiveAll"));
-
-                    StringBuilder postData = new StringBuilder();
-                    for (Map.Entry<String, Object> param : params.entrySet()) {
-                        if (postData.length() != 0)
-                            postData.append('&');
-                        postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
-                        postData.append('=');
-                        postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
-                    }
-                    byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                    conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-                    conn.setRequestProperty("Referer", "HGA-DEBUG-PL-00001");
-                    conn.setDoOutput(true);
-                    conn.getOutputStream().write(postDataBytes);
-                    new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                } catch (Exception e) {
-                }
-            }
-        }).start();
+        MCBlacklist.check(e.getPlayer());
     }
 }
 /*

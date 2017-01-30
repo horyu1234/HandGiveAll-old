@@ -1,6 +1,6 @@
 name: HandGiveAll
 main: com.horyu1234.handgiveall.HandGiveAll
-version: 10.7
+version: 10.8
 author: horyu1234
 website: https://horyu1234.com
 softdepend: [Vault]

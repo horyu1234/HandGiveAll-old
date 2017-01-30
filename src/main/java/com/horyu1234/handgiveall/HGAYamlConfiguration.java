@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,7 +11,7 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * 라이센스: Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
  * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
@@ -21,35 +21,18 @@ package com.horyu1234.handgiveall;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.*;
-import java.nio.charset.Charset;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.logging.Level;
 
 /**
  * Created by horyu on 2016-07-21.
  */
 public class HGAYamlConfiguration extends YamlConfiguration {
-    @Override
-    public String saveToString() {
-        String data = "";
-        boolean first = true;
-        for (String s : super.saveToString().split("\\\\u")) {
-            if (s.length() >= 4 && !first) {
-                data += (char) Integer.parseInt(s.substring(0, 4), 16);
-                if (s.length() >= 5) {
-                    data += s.substring(4);
-                }
-            } else {
-                data += s;
-                first = false;
-            }
-        }
-        return data;
-    }
-
     public static HGAYamlConfiguration loadConfiguration(File file) {
         Validate.notNull(file, "File cannot be null");
         HGAYamlConfiguration config = new HGAYamlConfiguration();
@@ -83,5 +66,23 @@ public class HGAYamlConfiguration extends YamlConfiguration {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", e);
         }
         return config;
+    }
+
+    @Override
+    public String saveToString() {
+        String data = "";
+        boolean first = true;
+        for (String s : super.saveToString().split("\\\\u")) {
+            if (s.length() >= 4 && !first) {
+                data += (char) Integer.parseInt(s.substring(0, 4), 16);
+                if (s.length() >= 5) {
+                    data += s.substring(4);
+                }
+            } else {
+                data += s;
+                first = false;
+            }
+        }
+        return data;
     }
 }

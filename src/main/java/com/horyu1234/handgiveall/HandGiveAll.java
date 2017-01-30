@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,7 +11,7 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * 라이센스: Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
  * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
@@ -21,6 +21,7 @@ package com.horyu1234.handgiveall;
 
 import com.horyu1234.handgiveall.commands.*;
 import com.horyu1234.handgiveall.utils.*;
+import com.horyu1234.handgiveall.web.MCBlacklist;
 import com.horyu1234.handgiveall.web.PluginInfoChecker;
 import com.horyu1234.handgiveall.web.Stats;
 import com.horyu1234.handgiveall.web.UpdateChecker;
@@ -47,16 +48,6 @@ public class HandGiveAll extends JavaPlugin {
     public double plugin_version;
     public boolean hookedVault = false;
     public Economy economy = null;
-    private PluginInfoChecker.PluginInfo pluginInfo;
-    //=================
-    private NumberUtils numberutil;
-    private PlayerUtils playerutil;
-    private ItemUtils itemutil;
-    private FireworkUtils fireworkutil;
-    private EnableUtils enableutils;
-    private ReflectionUtils reflectionutils;
-    //=================
-    private Help command_help;
     //=================
     public boolean use_korean = false;
     public boolean config_show_console_msg = false;
@@ -68,7 +59,16 @@ public class HandGiveAll extends JavaPlugin {
     public boolean config_use_firework = false;
     public String config_money_unit = "원";
     public int config_max_point_count = 3;
-
+    private PluginInfoChecker.PluginInfo pluginInfo;
+    //=================
+    private NumberUtils numberutil;
+    private PlayerUtils playerutil;
+    private ItemUtils itemutil;
+    private FireworkUtils fireworkutil;
+    private EnableUtils enableutils;
+    private ReflectionUtils reflectionutils;
+    //=================
+    private Help command_help;
 
     public void onDisable() {
         sendConsole("§aPlugin has been disabled.");
@@ -126,8 +126,6 @@ public class HandGiveAll extends JavaPlugin {
 
         sendConsole(LanguageUtils.getString("enable.installing"));
 
-        registerLibrary("gson-2.7.jar");
-
         initClasses();
 
         if (enableutils.checkFileName()) return;
@@ -154,6 +152,7 @@ public class HandGiveAll extends JavaPlugin {
             sendConsole(LanguageUtils.getString("enable.notices.footer"));
         }
 
+        MCBlacklist.init(this);
         getServer().getPluginManager().registerEvents(new HandGiveAllListener(this, pluginInfo), this);
         /*
         if (config_use_BungeeCord) {
@@ -346,7 +345,7 @@ public class HandGiveAll extends JavaPlugin {
     }
 
 	/*
-	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
 		if (!channel.equals("BungeeCord")) return;
 
 		ByteArrayDataInput in = ByteStreams.newDataInput(message);
@@ -358,29 +357,4 @@ public class HandGiveAll extends JavaPlugin {
 		}
 	}
 	*/
-
-    private void registerLibrary(String name) {
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdirs();
-        }
-        File file = new File(getDataFolder(), name);
-        try {
-            InputStream in = getClass().getResourceAsStream("/lib/" + name);
-            FileOutputStream out = new FileOutputStream(file);
-
-            byte[] data = new byte[1024];
-            int size;
-            while ((size = in.read(data)) != -1) {
-                out.write(data, 0, size);
-            }
-            out.flush();
-            URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-
-            Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            method.setAccessible(true);
-            method.invoke(sysloader, file.toURI().toURL());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

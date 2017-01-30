@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  *
  * 본 저작물의 모든 저작권은 HoryuSystems 에 있습니다.
  *
@@ -11,7 +11,7 @@
  * ============================================
  * 본 소스를 참고하여 프로그램을 제작할 시 해당 프로그램에 본 소스의 출처/라이센스를 공식적으로 안내를 해야 합니다.
  * 출처: https://github.com/horyu1234
- * 라이센스: Copyright (c) 2014~2016 HoryuSystems Ltd. All rights reserved.
+ * 라이센스: Copyright (c) 2014~2017 HoryuSystems Ltd. All rights reserved.
  * ============================================
  *
  * 자세한 내용은 https://horyu1234.com/EULA 를 확인해주세요.
@@ -92,36 +92,36 @@ public class PluginInfoChecker {
             return disable;
         }
 
-        public String getDisable_message() {
-            return disable_message;
-        }
-
-        public String getMd5() {
-            return md5;
-        }
-
-        public List<String> getNotices() {
-            return notices;
-        }
-
-        public String getNotice_date() {
-            return notice_date;
-        }
-
         public void setDisable(boolean disable) {
             this.disable = disable;
+        }
+
+        public String getDisable_message() {
+            return disable_message;
         }
 
         public void setDisable_message(String disable_message) {
             this.disable_message = disable_message;
         }
 
+        public String getMd5() {
+            return md5;
+        }
+
         public void setMd5(String md5) {
             this.md5 = md5;
         }
 
+        public List<String> getNotices() {
+            return notices;
+        }
+
         public void setNotices(List<String> notices) {
             this.notices = notices;
+        }
+
+        public String getNotice_date() {
+            return notice_date;
         }
 
         public void setNotice_date(String notice_date) {
