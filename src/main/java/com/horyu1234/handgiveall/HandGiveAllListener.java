@@ -38,7 +38,7 @@ public class HandGiveAllListener implements Listener {
 
     @EventHandler
     private void onPlayerJoin(final PlayerJoinEvent e) {
-        new UpdateChecker(plugin, e.getPlayer());
+        new UpdateChecker(plugin, e.getPlayer(), false);
 
         if (pluginInfo.getNotices().size() > 0) {
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

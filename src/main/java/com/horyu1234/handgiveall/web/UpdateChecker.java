@@ -32,11 +32,13 @@ import java.net.URL;
 public class UpdateChecker implements Runnable {
     private HandGiveAll plugin;
     private CommandSender sender;
+    private boolean showMessageBox;
     private String url_str;
 
-    public UpdateChecker(final HandGiveAll plugin, final CommandSender sender) {
+    public UpdateChecker(final HandGiveAll plugin, final CommandSender sender, boolean showMessageBox) {
         this.plugin = plugin;
         this.sender = sender;
+        this.showMessageBox = showMessageBox;
         this.url_str = "http://minecraft.horyu.me/minecraft/" + plugin.getName() + "/version";
         new Thread(this).start();
     }
@@ -63,7 +65,7 @@ public class UpdateChecker implements Runnable {
                     sender.sendMessage(plugin.prefix + LanguageUtils.getString("check.update.new_version.3") + plugin_version);
                     sender.sendMessage(plugin.prefix + LanguageUtils.getString("check.update.new_version.4"));
                     sender.sendMessage(plugin.prefix + LanguageUtils.getString("check.update.new_version.footer"));
-                    if (plugin.config_show_message_box) {
+                    if (plugin.config_show_message_box && showMessageBox) {
                         new Thread(new Runnable() {
                             public void run() {
                                 JOptionPane.showMessageDialog(null, LanguageUtils.getString("check.update.new_version.message_box"), "HandGiveAll v" + plugin.plugin_version, JOptionPane.INFORMATION_MESSAGE);

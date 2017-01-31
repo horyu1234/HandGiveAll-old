@@ -139,7 +139,7 @@ public class HandGiveAll extends JavaPlugin {
         enableutils.hookVault();
         initCommands();
 
-        new UpdateChecker(this, Bukkit.getConsoleSender());
+        new UpdateChecker(this, Bukkit.getConsoleSender(), true);
         PluginInfoChecker pluginInfoChecker = new PluginInfoChecker();
         pluginInfo = pluginInfoChecker.getInfo(this);
 
